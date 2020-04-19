@@ -25,6 +25,7 @@
     "express-fileupload": "^1.1.7-alpha.3",
     "file-saver": "^2.0.2",
     "jszip": "^3.3.0",
+    "moment": "^2.24.0",
     "nodemon": "^2.0.3",
     "path": "^0.12.7",
     "shortid": "^2.2.15",

@@ -5,10 +5,10 @@ const AWS = require("aws-sdk");
 const JSZip = require("JSZip");
 const { saveAs } = require("file-saver");
 const fs = require("fs");
+const moment = require("moment");
 
 let awsConfig = {
     region: process.env.REGION,
-    endpoint: process.env.ENDPOINT,
     accessKeyId: process.env.ACCESS_KEY_ID,
     secretAccessKey: process.env.SECRET_ACCESS_KEY
 };
@@ -24,12 +24,12 @@ AWS.config.update(awsConfig);
  }
 */
 
-const getItem = async url => {
+const getItem = async surl => {
     let docClient = new AWS.DynamoDB.DocumentClient();
     var params = {
         TableName: "reserve",
         Key: {
-            url: url
+            surl: surl
         }
     };
     try {
@@ -41,18 +41,22 @@ const getItem = async url => {
     }
 };
 
-const putItem = async (url, expires) => {
+const putItem = async (surl, expires) => {
+    var day = moment.unix(1587279812);
+    console.log(day);
+
+
+    return;
+    const now = moment().unix(), exp = now + parseInt(expires * 60);
     let docClient = new AWS.DynamoDB.DocumentClient();
 
-    let genn = gen.generate();
     var params = {
         TableName: "reserve",
         Item: {
-            url: url.toString(),
-            surl: genn,
+            surl: surl,
             valid: true,
-            created: Date.now(),
-            expires: Date.now()
+            created: now,
+            expires: exp
         }
     };
     try {
@@ -64,27 +68,45 @@ const putItem = async (url, expires) => {
 };
 
 router.post("/upload", async (req, res) => {
+    const { expires } = req.body;
+    var genn = gen.generate();
+    putItem(genn, expires);
+    return;
+
     var zip = new JSZip();
     var stream = fs.createWriteStream("exx.zip", { flags: "a" });
 
     if (req.files.files.length > 0) {
-        for (let t=0;t<req.files.files.length;++t)
+        for (let t = 0; t < req.files.files.length; ++t)
             zip.file(req.files.files[t].name, req.files.files[t].data);
-    }
-    else
-        zip.file(req.files.files.name, req.files.files.data);
+    } else zip.file(req.files.files.name, req.files.files.data);
 
     zip.generateAsync({ type: "nodebuffer" }).then(file => {
         stream.write(file, function() {
             /*
              * Files zipped, decide what to do. (To be completed yet)
-            */
+             */
+
+            const s3 = new AWS.S3();
+            const params = {
+                Bucket: process.env.BUCKET,
+                ACL: process.env.ACL,
+                Body: file,
+                Key: `${genn}.zip`
+            };
+
+            s3.putObject(params, async (err, data) => {
+                if (err) console.log(err);
+                else {
+                    const url = `${process.env.BASE_URL}/${genn}.zip`;
+                    putItem(genn, expires);
+                }
+            });
             console.log("Done!");
         });
     });
 
     return;
-    const { expires } = req.body;
     const files = req.files.files;
     /*
     if (req.files.files.length > 0)
@@ -92,6 +114,12 @@ router.post("/upload", async (req, res) => {
     else
         console.log(req.files.files);
         */
+});
+
+router.get("/getFiles", async (req, res) => {
+    //    const { surl } = req.body;
+    //    const url = `${process.env.BASE_URL}/${surl}.zip`;
+    console.log(await getItem("kgzg0o4Fs"));
 });
 
 module.exports = router;
