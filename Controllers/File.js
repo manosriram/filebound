@@ -42,12 +42,8 @@ const getItem = async surl => {
 };
 
 const putItem = async (surl, expires) => {
-    var day = moment.unix(1587279812);
-    console.log(day);
-
-
-    return;
-    const now = moment().unix(), exp = now + parseInt(expires * 60);
+    var now = Date.now();
+    const exp = now + (expires * 60000); // Minutes
     let docClient = new AWS.DynamoDB.DocumentClient();
 
     var params = {
@@ -69,9 +65,11 @@ const putItem = async (surl, expires) => {
 
 router.post("/upload", async (req, res) => {
     const { expires } = req.body;
+    console.log(expires);
+
+    return;
     var genn = gen.generate();
     putItem(genn, expires);
-    return;
 
     var zip = new JSZip();
     var stream = fs.createWriteStream("exx.zip", { flags: "a" });

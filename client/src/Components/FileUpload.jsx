@@ -4,7 +4,7 @@ import axios from "axios";
 const FileUpload = () => {
     const [file, setFile] = useState([]);
     const [filename, setFilename] = useState("");
-    const [exp, setExp] = useState(0);
+    const [exp, setExp] = useState(5);
     const handleChange = e => {
         if (e.target.files) {
             setFile(e.target.files);
@@ -37,7 +37,12 @@ const FileUpload = () => {
             <form onSubmit={handleSubmit} onChange={handleChange}>
                 <input type="file" multiple="multiple"/>
                 <br />
-                <input type="number" name="exp"/>
+                <select id="" name="exp">
+                    <option value="5">5 Minutes</option>
+                    <option value="30">30 Minutes</option>
+                    <option value="60">1 Hour</option>
+                    <option value="150">2.5 Hours</option>
+                </select>
                 <br />
                 <input type="submit" value="Upload" />
             </form>
