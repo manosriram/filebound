@@ -6,7 +6,10 @@ const fileUpload = require("express-fileupload");
 const path = require("path");
 const cors = require("cors");
 require('dotenv').config()
+const fs = require("fs");
+const helmet = require("helmet");
 
+app.use(helmet());
 app.use(cors());
 app.use(express.static(path.join(__dirname, "client/build")));
 app.use(fileUpload());

@@ -9,7 +9,7 @@ const App = () => {
        <Router>
         <Switch>
             <Route exact path="/"><Home /></Route>
-            <Route exact path="/download"><Download /></Route>
+            <Route exact path="/download/:url"><Download /></Route>
         </Switch>
         </Router>
       </>

@@ -3,30 +3,33 @@ import axios from "axios";
 
 const FileUpload = () => {
     const [file, setFile] = useState([]);
-    const [filename, setFilename] = useState("");
     const [exp, setExp] = useState(5);
+
+    const handleExp = e => {
+        setExp(e.target.value);
+    };
+
     const handleChange = e => {
-        if (e.target.files) {
-            setFile(e.target.files);
-            setFilename(e.target.files[0].name);
-        } else {
-            setExp(e.target.value);
-        }
+        let fileList = [];
+        fileList = e.target.files;
+        for (let t = 0; t < fileList.length; ++t)
+            setFile(file => [...file, fileList[t]]);
     };
 
     const handleSubmit = async e => {
         e.preventDefault();
         const fd = new FormData();
-        for (let t=0;t<file.length;++t)
-            fd.append("files", file[t]);
+        for (let t = 0; t < file.length; ++t) fd.append("files", file[t]);
 
         fd.append("expires", exp);
         try {
-            const resp = axios.post("/file/upload", fd, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                }
-            }).then(res2 => document.write(JSON.stringify(res2.data)));
+            const resp = axios
+                .post("/file/upload", fd, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                })
+                .then(res2 => document.write(JSON.stringify(res2.data)));
         } catch (err) {
             console.log(err);
         }
@@ -34,10 +37,21 @@ const FileUpload = () => {
 
     return (
         <Fragment>
-            <form onSubmit={handleSubmit} onChange={handleChange}>
-                <input type="file" multiple="multiple"/>
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="file"
+                    multiple="multiple"
+                    onChange={e => handleChange(e)}
+                />
                 <br />
-                <select id="" name="exp">
+                {file.map((fl, inn) => {
+                    return (
+                        <Fragment>
+                            <h3>{fl.name}</h3>
+                        </Fragment>
+                    );
+                })}
+                <select id="" name="exp" onChange={handleExp}>
                     <option value="5">5 Minutes</option>
                     <option value="30">30 Minutes</option>
                     <option value="60">1 Hour</option>
