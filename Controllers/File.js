@@ -6,6 +6,9 @@ const JSZip = require("JSZip");
 const { saveAs } = require("file-saver");
 const fs = require("fs");
 const moment = require("moment");
+const https = require("https");
+const axios = require("axios");
+const path = require("path");
 
 let awsConfig = {
     region: process.env.REGION,
@@ -23,6 +26,17 @@ AWS.config.update(awsConfig);
     isValid -> Boolean
  }
 */
+
+const downloadFile = (url, res) => {
+    const file = fs.createWriteStream("download.zip");
+    const pth = path.join(__dirname, "/../download.zip");
+    const request = https.get(
+        url, response => {
+            response.pipe(file);
+            file.on("finish", () => res.download(pth));
+        }
+    );
+};
 
 const getItem = async surl => {
     let docClient = new AWS.DynamoDB.DocumentClient();
@@ -43,7 +57,7 @@ const getItem = async surl => {
 
 const putItem = async (surl, expires) => {
     var now = Date.now();
-    const exp = now + (expires * 60000); // Minutes
+    const exp = now + expires * 60000; // Minutes
     let docClient = new AWS.DynamoDB.DocumentClient();
 
     var params = {
@@ -65,9 +79,6 @@ const putItem = async (surl, expires) => {
 
 router.post("/upload", async (req, res) => {
     const { expires } = req.body;
-    console.log(expires);
-
-    return;
     var genn = gen.generate();
     putItem(genn, expires);
 
@@ -114,10 +125,24 @@ router.post("/upload", async (req, res) => {
         */
 });
 
-router.get("/getFiles", async (req, res) => {
-    //    const { surl } = req.body;
-    //    const url = `${process.env.BASE_URL}/${surl}.zip`;
-    console.log(await getItem("kgzg0o4Fs"));
+router.post("/download", async (req, res) => {
+    let { url } = req.body;
+    const resp = await getItem(url);
+    try {
+        if (resp.scs) {
+            let { expires } = resp.data.Item;
+            created = new Date().getTime();
+            expires = new Date(expires).getTime();
+
+            if (expires > created) {
+                url = `${process.env.BASE_URL}/${url}.zip`;
+                downloadFile(url, res);
+            } else throw "File expired!";
+        }
+    } catch (er) {
+        console.log(er);
+        return res.json({ scs: false, msg: er });
+    }
 });
 
 module.exports = router;
