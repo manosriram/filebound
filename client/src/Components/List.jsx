@@ -23,7 +23,7 @@ const List = props => {
                 );
             })}
             <br />
-            <a href="#" onClick={handleDownload}>down</a>
+            <a href={props.url} onClick={handleDownload}>down</a>
         </Fragment>
     );
 };

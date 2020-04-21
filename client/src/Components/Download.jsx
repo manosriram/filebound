@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import List from "./List";
-const base = "https://reservebckt.s3.ap-south-1.amazonaws.com/";
+import BASE from "./Config";
 
 const Download = props => {
     const [url, surl] = useState("");
@@ -19,9 +19,9 @@ const Download = props => {
     React.useEffect(() => {
         if (JSON.stringify(props.leave) == "{}") setOK(true);
         let ph = loc.pathname.split("/")[2];
-        setHalf(loc.pathname.split("/")[2]);
+        setHalf(ph);
         listFiles(ph);
-        surl(base + ph + ".zip");
+        surl(BASE + ph + ".zip");
     }, []);
 
     const handleChange = e => {
@@ -29,7 +29,7 @@ const Download = props => {
     };
 
     const listFiles = async url => {
-        const resp = await fetch("/file/verify", {
+        const resp = await fetch("/file/verifyLink", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -41,15 +41,15 @@ const Download = props => {
             setNames(data.data.names);
             if (!props.ok) setPass(data.data.password);
             setTotal(data.data);
-        } else setErr("Link Expired!");
+        } else setErr(data.msg);
     };
 
-    if (props.valid) return <List names={names} url={url} half={half}/>
+    if (props.valid) return <List names={names} url={url} half={half} />;
     if (err) return <h3>{err}</h3>;
     if (pass) {
-            return <Verify url={half} />
+        return <Verify url={half} />;
     } else {
-        return <List names={names} url={url} half={half}/>
+        return <List names={names} url={url} half={half} />;
     }
 };
 

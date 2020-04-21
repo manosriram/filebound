@@ -3,3 +3,5 @@ a.out
 node_modules
 package-lock.json
 .env
+dec.js
+enc.js
