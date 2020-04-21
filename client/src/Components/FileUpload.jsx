@@ -1,22 +1,31 @@
 import React, { Fragment, useState } from "react";
 import axios from "axios";
-import FileList from "./FileList";
 import "./App.css";
+import URL from "./URL";
 
 const FileUpload = () => {
     const [file, setFile] = useState([]);
     const [exp, setExp] = useState(5);
     const [url, surl] = useState("");
+    const [pass, setPass] = useState(false);
+    const [currPass, updPass] = useState("");
 
+    let path = "";
     const handleExp = e => {
         setExp(e.target.value);
     };
 
     const handleChange = e => {
+        console.log(e.target);
         let fileList = [];
         fileList = e.target.files;
         for (let t = 0; t < fileList.length; ++t)
             setFile(file => [...file, fileList[t]]);
+    };
+
+    const handlePasswordChange = e => {
+        updPass(e.target.value);
+        console.log(currPass);
     };
 
     const handleSubmit = async e => {
@@ -25,6 +34,7 @@ const FileUpload = () => {
         for (let t = 0; t < file.length; ++t) fd.append("files", file[t]);
 
         fd.append("expires", exp);
+        fd.append("password", currPass);
         try {
             const resp = axios
                 .post("/file/upload", fd, {
@@ -42,6 +52,11 @@ const FileUpload = () => {
         setFile(file.filter(ff => ff.lastModified != inn));
     };
 
+    if (url) {
+        path = `${window.location.href}download/${url}`;
+        return <URL url={path} />
+    }
+
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
@@ -58,7 +73,7 @@ const FileUpload = () => {
                     if (fl.lastModified) {
                         return (
                             <>
-                                <h4>{fl.name}
+                                <h4>{fl.name} <span> {fl.size}B </span>
                                 <span id="close" onClick={() => deleteFile(fl.lastModified)}> X </span>
                                 </h4>
                             </>
@@ -72,10 +87,15 @@ const FileUpload = () => {
                     <option value="150">2.5 Hours</option>
                 </select>
                 <br />
+
+                <input type="checkbox" name="check" onChange={() => setPass(!pass)}/>
+                <label>Add Password</label>
+                <br />
+
+                {pass && <input type="password" name="pass" onChange={e => handlePasswordChange(e)} />}
+                <br />
                 <input type="submit" value="Upload" />
             </form>
-
-            {url && <h2>{url}</h2>}
         </Fragment>
     );
 };

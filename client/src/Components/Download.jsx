@@ -1,46 +1,56 @@
+import Verify from "./Verify";
 import React, { Fragment, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import List from "./List";
 const base = "https://reservebckt.s3.ap-south-1.amazonaws.com/";
 
-const Download = () => {
+const Download = props => {
     const [url, surl] = useState("");
     const [names, setNames] = useState([]);
+    const [err, setErr] = useState("");
+    const [pass, setPass] = useState("");
+    const [ok, setOK] = useState(false);
+    const [filePass, setFilePass] = useState("");
+    const [total, setTotal] = useState({});
+    const [half, setHalf] = useState("");
     let loc = useLocation();
 
     React.useEffect(() => {
+        if (JSON.stringify(props.leave) == "{}") setOK(true);
         let ph = loc.pathname.split("/")[2];
+        setHalf(loc.pathname.split("/")[2]);
         listFiles(ph);
         surl(base + ph + ".zip");
     }, []);
 
+    const handleChange = e => {
+        setFilePass(e.target.value);
+    };
+
     const listFiles = async url => {
-        const resp = await fetch("/file/list", {
+        const resp = await fetch("/file/verify", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({url: url})
+            body: JSON.stringify({ url: url })
         });
         const data = await resp.json();
-        setNames(data.names);
+        if (data.valid) {
+            setNames(data.data.names);
+            if (!props.ok) setPass(data.data.password);
+            setTotal(data.data);
+        } else setErr("Link Expired!");
     };
 
-    return (
-        <Fragment>
-        <input type="text" placeholder="URL" name="url" />
-        <br />
-        {names.map(name => {
-            return (
-                <Fragment>
-                    <h4 onClick={() => console.log(name)}>{name}</h4>
-                </Fragment>
-            );
-        }
-        )}
-        <a href={url}>down</a>
-        </Fragment>
-    );
+    if (props.valid) return <List names={names} url={url}/>
+    if (err) return <h3>{err}</h3>;
+    if (pass) {
+            return <Verify url={half} />
+    } else {
+        return <List names={names} url={url}/>
+    }
 };
 
 export default Download;
