@@ -32,7 +32,7 @@ AWS.config.update(awsConfig);
 const encryptFileName = name => {
     const key = process.env.SEED32;
     const iv = process.env.SEED16;
-    const cipher = cr.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
+    const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
     let hex = cipher.update(name, "utf8", "hex");
     enc += cipher.final("hex");
     return enc;
@@ -89,6 +89,7 @@ const putItem = async (surl, expires, files) => {
 router.post("/upload", async (req, res) => {
     const { expires } = req.body;
     var genn = nanoid(32);
+    return res.json({ url: genn });
     putItem(genn, expires, req.files.files);
     var zipp = new AdmZip();
 

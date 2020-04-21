@@ -28,10 +28,17 @@ const Download = () => {
 
     return (
         <Fragment>
-            <input type="text" placeholder="URL" name="url" />
-            <br />
-            {names.map(name => <h4>{name}</h4>)}
-            <a href={url}>down</a>
+        <input type="text" placeholder="URL" name="url" />
+        <br />
+        {names.map(name => {
+            return (
+                <Fragment>
+                    <h4 onClick={() => console.log(name)}>{name}</h4>
+                </Fragment>
+            );
+        }
+        )}
+        <a href={url}>down</a>
         </Fragment>
     );
 };

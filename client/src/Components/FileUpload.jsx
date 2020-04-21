@@ -1,9 +1,12 @@
 import React, { Fragment, useState } from "react";
 import axios from "axios";
+import FileList from "./FileList";
+import "./App.css";
 
 const FileUpload = () => {
     const [file, setFile] = useState([]);
     const [exp, setExp] = useState(5);
+    const [url, surl] = useState("");
 
     const handleExp = e => {
         setExp(e.target.value);
@@ -29,27 +32,38 @@ const FileUpload = () => {
                         "Content-Type": "multipart/form-data"
                     }
                 })
-                .then(res2 => document.write(JSON.stringify(res2.data)));
+                .then(res2 => surl(res2.data.url));
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const deleteFile = inn => {
+        setFile(file.filter(ff => ff.lastModified != inn));
     };
 
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
                 <input
+                    id="files"
                     type="file"
                     multiple="multiple"
                     onChange={e => handleChange(e)}
+                    className="hidden"
                 />
+                <label for="files" id="file_label">Select Files</label>
                 <br />
-                {file.map((fl, inn) => {
-                    return (
-                        <Fragment>
-                            <h3>{fl.name}</h3>
-                        </Fragment>
-                    );
+                {file.map(fl => {
+                    if (fl.lastModified) {
+                        return (
+                            <>
+                                <h4>{fl.name}
+                                <span id="close" onClick={() => deleteFile(fl.lastModified)}> X </span>
+                                </h4>
+                            </>
+                        );
+                    }
                 })}
                 <select id="" name="exp" onChange={handleExp}>
                     <option value="5">5 Minutes</option>
@@ -60,6 +74,8 @@ const FileUpload = () => {
                 <br />
                 <input type="submit" value="Upload" />
             </form>
+
+            {url && <h2>{url}</h2>}
         </Fragment>
     );
 };
