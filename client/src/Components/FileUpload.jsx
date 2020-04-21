@@ -9,10 +9,15 @@ const FileUpload = () => {
     const [url, surl] = useState("");
     const [pass, setPass] = useState(false);
     const [currPass, updPass] = useState("");
+    const [dwn, setdwn] = useState(1);
 
     let path = "";
     const handleExp = e => {
         setExp(e.target.value);
+    };
+
+    const handledwn = e => {
+        setdwn(e.target.value);
     };
 
     const handleChange = e => {
@@ -35,6 +40,7 @@ const FileUpload = () => {
 
         fd.append("expires", exp);
         fd.append("password", currPass);
+        fd.append("downloads", dwn);
         try {
             const resp = axios
                 .post("/file/upload", fd, {
@@ -80,11 +86,19 @@ const FileUpload = () => {
                         );
                     }
                 })}
+                <label>Expires after {"  "}</label>
                 <select id="" name="exp" onChange={handleExp}>
                     <option value="5">5 Minutes</option>
                     <option value="30">30 Minutes</option>
                     <option value="60">1 Hour</option>
                     <option value="150">2.5 Hours</option>
+                </select>
+                <label>{"  "} OR {"  "}</label>
+                <select id="" name="dwn" onChange={handledwn}>
+                    <option value="1">1 Download</option>
+                    <option value="3">3 Downloads</option>
+                    <option value="5">5 Downloads</option>
+                    <option value="10">10 Downloads</option>
                 </select>
                 <br />
 

@@ -2,6 +2,17 @@ import React, { Fragment, useState } from "react";
 import Download from "./Download";
 
 const List = props => {
+
+    const handleDownload = async () => {
+        const resp = await fetch("/file/download", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: props.half })
+        });
+        const data = await resp.json();
+    };
     return (
         <Fragment>
             {props.names.map(name => {
@@ -12,7 +23,7 @@ const List = props => {
                 );
             })}
             <br />
-            <a href={props.url}>down</a>
+            <a href="#" onClick={handleDownload}>down</a>
         </Fragment>
     );
 };

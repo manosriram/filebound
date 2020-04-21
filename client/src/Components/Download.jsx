@@ -44,12 +44,12 @@ const Download = props => {
         } else setErr("Link Expired!");
     };
 
-    if (props.valid) return <List names={names} url={url}/>
+    if (props.valid) return <List names={names} url={url} half={half}/>
     if (err) return <h3>{err}</h3>;
     if (pass) {
             return <Verify url={half} />
     } else {
-        return <List names={names} url={url}/>
+        return <List names={names} url={url} half={half}/>
     }
 };
 

@@ -67,7 +67,40 @@ const getItem = async surl => {
     }
 };
 
-const putItem = async (surl, expires, password, files) => {
+const deleteItem = async url => {
+    let docClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        TableName: "reserve",
+        Key: {
+            surl: url
+        }
+    };
+
+    const resp = await docClient.delete(params).promise();
+    console.log(resp);
+};
+
+const updateItem = async url => {
+    let docClient = new AWS.DynamoDB.DocumentClient();
+    const itemMetaData = await getItem(url);
+    var params = {
+        TableName: "reserve",
+        Key: {
+            surl: url
+        },
+        UpdateExpression: "set downloads = :n",
+        ExpressionAttributeValues: {
+            ":n": itemMetaData.data.Item.downloads - 1
+        },
+        ReturnValues: "UPDATED_NEW"
+    };
+    const resp = await docClient.update(params).promise();
+    if (resp.Attributes.downloads === 0)
+        await deleteItem(url);
+    return { scs: true, err: "Updated" };
+};
+
+const putItem = async (surl, expires, password, files, downloads) => {
     var now = Date.now();
     const exp = now + expires * 60000;
     let docClient = new AWS.DynamoDB.DocumentClient();
@@ -87,7 +120,8 @@ const putItem = async (surl, expires, password, files) => {
             created: now,
             expires: exp,
             names: names,
-            password: password
+            password: password,
+            downloads: downloads
         }
     };
     try {
@@ -99,7 +133,7 @@ const putItem = async (surl, expires, password, files) => {
 };
 
 router.post("/upload", async (req, res) => {
-    const { expires } = req.body;
+    const { expires, downloads } = req.body;
     let password = "";
     if (req.body.password) password = req.body.password;
     var genn = nanoid(32);
@@ -107,7 +141,7 @@ router.post("/upload", async (req, res) => {
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
-    putItem(genn, expires, hash, req.files.files);
+    putItem(genn, expires, hash, req.files.files, downloads);
     var zipp = new AdmZip();
 
     if (req.files.files.length > 0) {
@@ -184,6 +218,12 @@ router.post("/passwordVerify", async (req, res) => {
             return res.status(201).json({ valid: true });
         else res.status(403).json({ valid: false });
     } else res.status(403).json({ valid: false });
+});
+
+router.post("/download", async (req, res) => {
+    const { url } = req.body;
+    
+    await updateItem(url);
 });
 
 module.exports = router;
