@@ -1,33 +1,22 @@
 const AWS = require("aws-sdk");
 const TABLE = process.env.TABLE;
+const awsConfig = require("./configAWS");
+AWS.config.update(awsConfig);
+const docClient = new AWS.DynamoDB.DocumentClient();
 
 const getItem = async surl => {
-    try {
-        let docClient = new AWS.DynamoDB.DocumentClient();
-    } catch (er) {
-        return { scs: false, msg: "Some error occured", error: er };
-    }
     const params = {
         TableName: TABLE,
         Key: {
             surl: surl
         }
     };
-    try {
         const data = await docClient.get(params).promise();
         if (JSON.stringify(data) != "{}") return { scs: true, data: data };
         else return { scs: false, msg: "Link Expired!" };
-    } catch (er) {
-        return { scs: false, msg: "Some error occured", error: er };
-    }
 };
 
 const deleteItem = async url => {
-    try {
-        let docClient = new AWS.DynamoDB.DocumentClient();
-    } catch (er) {
-        return { scs: false, msg: "Some error occured", error: er };
-    }
     const params = {
         TableName: TABLE,
         Key: {
@@ -44,7 +33,6 @@ const deleteItem = async url => {
 
 const updateItem = async url => {
     try {
-        let docClient = new AWS.DynamoDB.DocumentClient();
         const itemMetaData = await getItem(url);
     } catch (er) {
         return { scs: false, msg: "Some error occured", error: er };
@@ -74,9 +62,9 @@ const putItem = async (surl, expires, password, files, downloads) => {
     let now = Date.now();
     const exp = now + expires * 60000;
     let docClient = new AWS.DynamoDB.DocumentClient();
+    let names = [];
 
     try {
-        let names = [];
         if (files.length > 0) {
             for (let t = 0; t < files.length; ++t) {
                 names.push(files[t].name);
@@ -94,14 +82,14 @@ const putItem = async (surl, expires, password, files, downloads) => {
             created: now,
             expires: exp,
             names: names,
-            password: password,
+            password: password == '' ? false : password,
             downloads: downloads
         }
     };
     try {
         const data = await docClient.put(params).promise();
         return { scs: true, surl: genn };
-    } catch (er) {
+    } catch (err) {
         return { scs: false, err: err };
     }
 };

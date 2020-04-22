@@ -6,6 +6,7 @@ const AdmZip = require("adm-zip");
 const archiver = require("archiver");
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
+const crypto = require("crypto");
 archiver.registerFormat('zip-encrypted', require("archiver-zip-encrypted"));
 const {
     encryptFileName,
@@ -25,62 +26,50 @@ function bufferToStream(buffer) {
     return stream;
 }
 
+function getStream(stream) {
+  return new Promise(resolve => {
+    const chunks = [];
+
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString()));
+  });
+}
+
 router.post("/upload", async (req, res) => {
     const { expires, downloads } = req.body;
-    let password = "";
+    let password = '';
     if (req.body.password) password = req.body.password;
 
+    var zlib = require('zlib');
+    var zip = zlib.createGzip();
+    const algorithm = 'aes-256-ctr',
+          pass = 'd6F3Efeq';
+    var encrypt = crypto.createCipher(algorithm, pass);
 
     const rr = bufferToStream(req.files.files.data);
-    rr.on("data", data => console.log(data));
-    return;
+    const ss = rr.pipe(zip).pipe(encrypt);
+
+    const datarec = await getStream(ss);
+
     var genn = nanoid(32);
-    var salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(password, salt);
-
-    // putItem(genn, expires, hash, req.files.files, downloads);
-
-    try {
-        var zipp = new AdmZip();
-        if (req.files.files.length > 0) {
-            for (let t = 0; t < req.files.files.length; ++t) {
-                zipp.addFile(
-                    req.files.files[t].name,
-                    Buffer.alloc(
-                        req.files.files[t].size,
-                        req.files.files[t].data
-                    )
-                );
-            }
-        } else {
-            zipp.addFile(
-                req.files.files.name,
-                Buffer.alloc(req.files.files.size, req.files.files.data)
-            );
-        }
-    } catch (er) {
-        return res.json({ scs: false, msg: "Some error occured", error: er });
+    if (password) {
+        var salt = bcrypt.genSaltSync(10);
+        password = bcrypt.hashSync(password, salt);
     }
 
+    putItem(genn, expires, password, req.files.files, downloads);
     try {
-        const sending = zipp.toBuffer();
-        console.log(sending);
-        return;
         const s3 = new AWS.S3();
         const params = {
             Bucket: process.env.BUCKET,
             ACL: process.env.ACL,
-            Body: sending,
+            Body: datarec,
             Key: `${genn}.zip`
         };
 
         s3.putObject(params, async (err, data) => {
-            if (er)
-                return res.json({
-                    scs: false,
-                    msg: "Some error occured",
-                    error: er
-                });
+            console.log("done");
+            if (err) console.log(err);
         });
         return res.json({ scs: true, url: genn });
     } catch (er) {
@@ -129,7 +118,6 @@ router.post("/list", async (req, res) => {
 router.post("/verifyPassword", async (req, res) => {
     const { password, url } = req.body;
     const resp = await getItem(url);
-
     if (resp.scs) {
         const hashed = resp.data.Item.password;
         if (bcrypt.compareSync(password, hashed))

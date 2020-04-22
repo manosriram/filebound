@@ -10,14 +10,12 @@ const Download = props => {
     const [names, setNames] = useState([]);
     const [err, setErr] = useState("");
     const [pass, setPass] = useState("");
-    const [ok, setOK] = useState(false);
     const [filePass, setFilePass] = useState("");
     const [total, setTotal] = useState({});
     const [half, setHalf] = useState("");
     let loc = useLocation();
 
     React.useEffect(() => {
-        if (JSON.stringify(props.leave) == "{}") setOK(true);
         let ph = loc.pathname.split("/")[2];
         setHalf(ph);
         listFiles(ph);
@@ -39,14 +37,15 @@ const Download = props => {
         const data = await resp.json();
         if (data.valid) {
             setNames(data.data.names);
-            if (!props.ok) setPass(data.data.password);
+            if (data.data.password) setPass(data.data.password);
             setTotal(data.data);
         } else setErr(data.msg);
     };
 
     if (props.valid) return <List names={names} url={url} half={half} />;
     if (err) return <h3>{err}</h3>;
-    if (pass) {
+    console.log(pass);
+    if (pass.length > 0) {
         return <Verify url={half} />;
     } else {
         return <List names={names} url={url} half={half} />;

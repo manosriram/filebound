@@ -16,7 +16,7 @@ const Verify = props => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        const resp = await fetch("/file/passwordVerify", {
+        const resp = await fetch("/file/verifyPassword", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

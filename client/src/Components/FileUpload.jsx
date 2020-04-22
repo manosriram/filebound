@@ -30,7 +30,6 @@ const FileUpload = () => {
 
     const handlePasswordChange = e => {
         updPass(e.target.value);
-        console.log(currPass);
     };
 
     const handleSubmit = async e => {
@@ -39,7 +38,8 @@ const FileUpload = () => {
         for (let t = 0; t < file.length; ++t) fd.append("files", file[t]);
 
         fd.append("expires", exp);
-        fd.append("password", currPass);
+        if (currPass)
+            fd.append("password", currPass);
         fd.append("downloads", dwn);
         try {
             const resp = axios
@@ -56,6 +56,11 @@ const FileUpload = () => {
 
     const deleteFile = inn => {
         setFile(file.filter(ff => ff.lastModified != inn));
+    };
+
+    const clearPass = () => {
+        setPass(!pass);
+        updPass("");
     };
 
     if (url) {
@@ -102,7 +107,7 @@ const FileUpload = () => {
                 </select>
                 <br />
 
-                <input type="checkbox" name="check" onChange={() => setPass(!pass)}/>
+                <input type="checkbox" name="check" onChange={() => clearPass()}/>
                 <label>Add Password</label>
                 <br />
 
