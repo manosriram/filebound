@@ -3,8 +3,8 @@ import axios from "axios";
 import "./App.css";
 import URL from "./URL";
 
-const bytesToMegaBytes = bytes => { 
-  return (bytes / (1024*1024)).toFixed(3);
+const bytesToMegaBytes = bytes => {
+    return (bytes / (1024*1024)).toFixed(3);
 }
 
 const FileUpload = () => {
@@ -16,14 +16,6 @@ const FileUpload = () => {
     const [dwn, setdwn] = useState(1);
 
     let path = "";
-    const handleExp = e => {
-        setExp(e.target.value);
-    };
-
-    const handledwn = e => {
-        setdwn(e.target.value);
-    };
-
     const handleChange = e => {
         let fileList = [];
         fileList = e.target.files;
@@ -33,7 +25,6 @@ const FileUpload = () => {
     };
 
     const handlePasswordChange = e => {
-        updPass(e.target.value);
     };
 
     const handleSubmit = async e => {
@@ -74,51 +65,51 @@ const FileUpload = () => {
 
     return (
         <Fragment>
-            <form onSubmit={handleSubmit}>
-                <input
-                    id="files"
-                    type="file"
-                    multiple="multiple"
-                    onChange={e => handleChange(e)}
-                    className="hidden"
-                />
-                <label for="files" id="file_label">Select Files</label>
-                <br />
-                {file.map(fl => {
-                    if (fl.lastModified) {
-                        return (
-                            <>
-                                <h4>{fl.name} <span> {bytesToMegaBytes(fl.size)} MB </span>
-                                <span id="close" onClick={() => deleteFile(fl.lastModified)}> X </span>
-                                </h4>
-                            </>
-                        );
-                    }
-                })}
-                <label>Expires after {"  "}</label>
-                <select id="" name="exp" onChange={handleExp}>
-                    <option value="5">5 Minutes</option>
-                    <option value="30">30 Minutes</option>
-                    <option value="60">1 Hour</option>
-                    <option value="150">2.5 Hours</option>
-                </select>
-                <label>{"  "} OR {"  "}</label>
-                <select id="" name="dwn" onChange={handledwn}>
-                    <option value="1">1 Download</option>
-                    <option value="3">3 Downloads</option>
-                    <option value="5">5 Downloads</option>
-                    <option value="10">10 Downloads</option>
-                </select>
-                <br />
+        <form onSubmit={handleSubmit}>
+        <input
+        id="files"
+        type="file"
+        multiple="multiple"
+        onChange={e => handleChange(e)}
+        className="hidden"
+        />
+        <label for="files" id="file_label">Select Files</label>
+        <br />
+        {file.map(fl => {
+            if (fl.lastModified) {
+                return (
+                    <>
+                    <h4>{fl.name} <span> {bytesToMegaBytes(fl.size)} MB </span>
+                    <span id="close" onClick={() => deleteFile(fl.lastModified)}> X </span>
+                    </h4>
+                    </>
+                );
+            }
+        })}
+        <label>Expires after {"  "}</label>
+        <select id="" name="exp" onChange={e => setExp(e.target.value)}>
+        <option value="5">5 Minutes</option>
+        <option value="30">30 Minutes</option>
+        <option value="60">1 Hour</option>
+        <option value="150">2.5 Hours</option>
+        </select>
+        <label>{"  "} OR {"  "}</label>
+        <select id="" name="dwn" onChange={e => setdwn(e.target.value)}>
+        <option value="1">1 Download</option>
+        <option value="3">3 Downloads</option>
+        <option value="5">5 Downloads</option>
+        <option value="10">10 Downloads</option>
+        </select>
+        <br />
 
-                <input type="checkbox" name="check" onChange={() => clearPass()}/>
-                <label>Add Password</label>
-                <br />
+        <input type="checkbox" name="check" onChange={() => clearPass()}/>
+        <label>Add Password</label>
+        <br />
 
-                {pass && <input type="password" name="pass" onChange={e => handlePasswordChange(e)} />}
-                <br />
-                <input type="submit" value="Upload" />
-            </form>
+        {pass && <input type="password" name="pass" onChange={e => updPass(e.target.value)} /> }
+        <br />
+        <input type="submit" value="Upload" />
+        </form>
         </Fragment>
     );
 };

@@ -8,7 +8,6 @@ const Verify = props => {
 
     const handleChange = e => {
         setFilePass(e.target.value);
-        console.log(props);
     };
 
     const handleSubmit = async e => {

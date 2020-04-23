@@ -22,8 +22,8 @@ const Download = props => {
         listFiles(ph);
         setHalf(ph);
         surl(BASE + ph + ".zip");
-
         isld(false);
+
     }, []);
 
     const handleChange = e => {
@@ -46,9 +46,9 @@ const Download = props => {
         } else setErr(data.msg);
     };
 
+    if (props.valid) return <List names={names} url={props.url} half={half} />
     if (ld) return <i className="fa fa-refresh fa-spin"></i>
 
-    if (props.valid) return <List names={names} url={props.url} half={half} />
     if (pass) return <Verify url={half} />;
     else if (err) return <h3>{err}</h3>
     else return <List names={names} url={url} half={half} />;

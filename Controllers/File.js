@@ -21,7 +21,8 @@ const {
     deleteItem,
     getObject,
     putS3Item,
-    getS3Item
+    getS3Item,
+    isEmpty
 } = require("./Utility");
 const awsConfig = require("./configAWS");
 AWS.config.update(awsConfig);
@@ -111,45 +112,40 @@ router.post("/upload", async (req, res) => {
 
 router.post("/verifyLink", async (req, res) => {
     const { url } = req.body;
-    const resp = await getItem(url);
     try {
-        if (resp.scs) {
-            let { expires } = resp.data.Item;
-            created = new Date().getTime();
-            expires = new Date(expires).getTime();
+        getItem(url, resp => {
+            if (!isEmpty(resp)) {
+                let { expires } = resp.Item;
+                created = new Date().getTime();
+                expires = new Date(expires).getTime();
 
-            if (expires > created) {
-                try {
-                    return res.json({ valid: true, data: resp.data.Item });
-                } catch (er) {
-                    return res.json({
-                        scs: false,
-                        msg: "Some error occured",
-                        error: er
-                    });
-                }
+                if (expires > created || resp.downloads == 0)
+                        return res.json({ valid: true, data: resp.Item });
+                else return res.json({ valid: false, msg: "Link Expired!" });
             } else return res.json({ valid: false, msg: "Link Expired!" });
-        } else return res.json({ valid: false, msg: "Link Expired!" });
+        });
     } catch (er) {
-        return res.json({ valid: false, msg: "Some error occured" });
+        return res.json({ valid: false, msg: "Link Expired!" });
     }
 });
 
 router.post("/list", async (req, res) => {
     const { url } = req.body;
-    const resp = await getItem(url);
-    return res.json({ names: resp.data.Item.names });
+    getItem(url, resp => {
+        return res.json({ names: resp.data.Item.names });
+    });
 });
 
 router.post("/verifyPassword", async (req, res) => {
     const { password, url } = req.body;
-    const resp = await getItem(url);
-    if (resp.scs) {
-        const hashed = resp.data.Item.password;
-        if (bcrypt.compareSync(password, hashed))
-            return res.status(201).json({ valid: true });
-        else res.status(403).json({ valid: false });
-    } else res.status(403).json({ valid: false });
+    getItem(url, resp => {
+        if (resp.Item.valid) {
+            const hashed = resp.Item.password;
+            if (bcrypt.compareSync(password, hashed))
+                return res.status(201).json({ valid: true });
+            else res.status(403).json({ valid: false });
+        } else res.status(403).json({ valid: false });
+    });
 });
 
 router.post("/download", async (req, res) => {
@@ -158,26 +154,26 @@ router.post("/download", async (req, res) => {
         const dd = await updateItem(url);
         return res.json({ scs: true, msg: "Updated!" });
     } catch (er) {
-        return res.json({ scs: false, msg: "Some error occured", error: er });
+        return res.json({ scs: false, msg: "Link Expired!", error: er });
     }
 });
 
 router.post("/decryptFile", async (req, res) => {
-    let { url } = req.body;
-    url += ".zip";
+    let url = req.body.url + ".zip";
+    let decrUrl = "dec_" + url;
 
-    let decUrl = "dec_" + url;
-    const urlData = await getS3Item(decUrl);
-    if (urlData.code == "NoSuchKey") {
-        const newUrlData = await getS3Item(url);
-        const dec = await decryptZip(newUrlData.Body);
-        const genn = nanoid(32);
+    getItem(decrUrl, async data => {
+        if (isEmpty(data)) {
+            const newUrlData = await getS3Item(url);
+            const dec = await decryptZip(newUrlData.Body);
+            const genn = nanoid(32);
 
-        putS3Item(url, dec, true);
-        return res.json({ scs: true, decUrl: genn });
-    } else {
-        return res.json({ scs: true, decUrl: decUrl });
-    }
+            putS3Item(decrUrl, dec, true);
+            return res.json({ scs: true, decUrl: decrUrl });
+        } else {
+            return res.json({ scs: true, decUrl: decrUrl });
+        }
+    });
 });
 
 module.exports = router;
