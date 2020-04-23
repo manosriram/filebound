@@ -3,6 +3,10 @@ import axios from "axios";
 import "./App.css";
 import URL from "./URL";
 
+const bytesToMegaBytes = bytes => { 
+  return (bytes / (1024*1024)).toFixed(3);
+}
+
 const FileUpload = () => {
     const [file, setFile] = useState([]);
     const [exp, setExp] = useState(5);
@@ -21,11 +25,11 @@ const FileUpload = () => {
     };
 
     const handleChange = e => {
-        console.log(e.target);
         let fileList = [];
         fileList = e.target.files;
-        for (let t = 0; t < fileList.length; ++t)
+        for (let t = 0; t < e.target.files.length; ++t) {
             setFile(file => [...file, fileList[t]]);
+        }
     };
 
     const handlePasswordChange = e => {
@@ -84,7 +88,7 @@ const FileUpload = () => {
                     if (fl.lastModified) {
                         return (
                             <>
-                                <h4>{fl.name} <span> {fl.size}B </span>
+                                <h4>{fl.name} <span> {bytesToMegaBytes(fl.size)} MB </span>
                                 <span id="close" onClick={() => deleteFile(fl.lastModified)}> X </span>
                                 </h4>
                             </>

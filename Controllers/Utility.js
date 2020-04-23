@@ -4,6 +4,36 @@ const awsConfig = require("./configAWS");
 AWS.config.update(awsConfig);
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+const getS3Item = async url => {
+    const s3 = new AWS.S3();
+    const params = {
+        Bucket: process.env.BUCKET,
+        Key: url
+    };
+
+    try {
+        const buffer = await s3.getObject(params).promise();
+        return buffer;
+    } catch (er) {
+        return ({scs: false, code: er.code });
+    }
+};
+
+const putS3Item = (genn, data, dec) => {
+    const s3 = new AWS.S3();
+    const params = {
+        Bucket: process.env.BUCKET,
+        ACL: process.env.ACL,
+        Body: data,
+        Key: (dec == true) ? `dec_${genn}` : `${genn}.zip`
+    };
+
+    s3.putObject(params, async (err, data) => {
+        console.log("done");
+        if (err) console.log(err);
+    });
+};
+
 const getItem = async surl => {
     const params = {
         TableName: TABLE,
@@ -11,9 +41,9 @@ const getItem = async surl => {
             surl: surl
         }
     };
-        const data = await docClient.get(params).promise();
-        if (JSON.stringify(data) != "{}") return { scs: true, data: data };
-        else return { scs: false, msg: "Link Expired!" };
+    const data = await docClient.get(params).promise();
+    if (JSON.stringify(data) != "{}") return { scs: true, data: data };
+    else return { scs: false, msg: "Link Expired!" };
 };
 
 const deleteItem = async url => {
@@ -31,12 +61,21 @@ const deleteItem = async url => {
     }
 };
 
+const deleteS3Item = url => {
+    const s3 = new AWS.S3();
+    const params = {
+        Bucket: process.env.BUCKET,
+        Key: url
+    };
+
+    s3.deleteObject(params, async (err, data) => {
+        console.log("deleted");
+        if (err) console.log(err);
+    });
+};
+
 const updateItem = async url => {
-    try {
-        const itemMetaData = await getItem(url);
-    } catch (er) {
-        return { scs: false, msg: "Some error occured", error: er };
-    }
+    const itemMetaData = await getItem(url);
     const params = {
         TableName: TABLE,
         Key: {
@@ -50,7 +89,11 @@ const updateItem = async url => {
     };
     try {
         const resp = await docClient.update(params).promise();
-        if (resp.Attributes.downloads === 0) await deleteItem(url);
+        if (resp.Attributes.downloads === 0) {
+            console.log("hit");
+            await deleteItem(url);
+            await deleteS3Item(url);
+        }
 
         return { scs: true, err: "Updated" };
     } catch (er) {
@@ -82,7 +125,7 @@ const putItem = async (surl, expires, password, files, downloads) => {
             created: now,
             expires: exp,
             names: names,
-            password: password == '' ? false : password,
+            password: password == "" ? false : password,
             downloads: downloads
         }
     };
@@ -94,9 +137,28 @@ const putItem = async (surl, expires, password, files, downloads) => {
     }
 };
 
+const getObject = async url => {
+    url = url + ".zip";
+    const s3 = new AWS.S3();
+    console.log(url);
+    try {
+        const params = {
+            Bucket: process.env.BUCKET,
+            Key: url
+        };
+        const data = await s3.getObject(params).promise();
+        return data.Body;
+    } catch (er) {
+        console.log(er);
+    }
+};
+
 module.exports = {
     getItem: getItem,
     putItem: putItem,
     updateItem: updateItem,
-    deleteItem: deleteItem
+    deleteItem: deleteItem,
+    getObject: getObject,
+    putS3Item: putS3Item,
+    getS3Item: getS3Item
 };

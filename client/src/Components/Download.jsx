@@ -6,20 +6,24 @@ import List from "./List";
 import BASE from "./Config";
 
 const Download = props => {
+    const [ld, isld] = useState(false);
     const [url, surl] = useState("");
     const [names, setNames] = useState([]);
     const [err, setErr] = useState("");
-    const [pass, setPass] = useState("");
+    const [pass, setPass] = useState(false);
     const [filePass, setFilePass] = useState("");
     const [total, setTotal] = useState({});
     const [half, setHalf] = useState("");
     let loc = useLocation();
 
     React.useEffect(() => {
+        isld(true);
         let ph = loc.pathname.split("/")[2];
-        setHalf(ph);
         listFiles(ph);
+        setHalf(ph);
         surl(BASE + ph + ".zip");
+
+        isld(false);
     }, []);
 
     const handleChange = e => {
@@ -37,19 +41,17 @@ const Download = props => {
         const data = await resp.json();
         if (data.valid) {
             setNames(data.data.names);
-            if (data.data.password) setPass(data.data.password);
+            setPass(data.data.password);
             setTotal(data.data);
         } else setErr(data.msg);
     };
 
-    if (props.valid) return <List names={names} url={url} half={half} />;
-    if (err) return <h3>{err}</h3>;
-    console.log(pass);
-    if (pass.length > 0) {
-        return <Verify url={half} />;
-    } else {
-        return <List names={names} url={url} half={half} />;
-    }
+    if (ld) return <i className="fa fa-refresh fa-spin"></i>
+
+    if (props.valid) return <List names={names} url={props.url} half={half} />
+    if (pass) return <Verify url={half} />;
+    else if (err) return <h3>{err}</h3>
+    else return <List names={names} url={url} half={half} />;
 };
 
 export default Download;

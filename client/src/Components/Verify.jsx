@@ -6,12 +6,9 @@ const Verify = props => {
     const [valid, setValid] = useState(false);
     const [msg, setMSG] = useState("");
 
-    React.useEffect(() => {
-        console.log(props);
-    }, []);
-
     const handleChange = e => {
         setFilePass(e.target.value);
+        console.log(props);
     };
 
     const handleSubmit = async e => {
@@ -28,7 +25,7 @@ const Verify = props => {
         if (!data.valid) setMSG("Wrong Pass!");
     };
 
-    if (valid) return <Download valid={true} />;
+    if (valid) return <Download valid={true} url={props.url} />;
     else {
         return (
             <form action="" onSubmit={handleSubmit}>
