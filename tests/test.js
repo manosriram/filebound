@@ -1,4 +1,2 @@
 const cr = require("crypto");
-const hash = cr.randomBytes(32);
-
-console.log(hash.toString('hex'));
+console.log(cr.randomBytes(32).toString('hex'));

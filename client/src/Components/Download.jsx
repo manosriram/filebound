@@ -19,11 +19,12 @@ const Download = props => {
 
     React.useEffect(() => {
         isld(true);
-        let ph = loc.pathname.split("/")[2];
-        listFiles(ph);
-        setHash(loc.pathname.split("/")[3]);
-        setHalf(ph);
-        surl(BASE + ph + ".zip");
+        setHash(loc.pathname.split("|")[1]);
+        const url = loc.pathname.split("|")[0].split("/")[2];
+        surl(BASE + url + '.zip');
+
+        listFiles(url);
+        setHalf(url);
         isld(false);
     }, []);
 

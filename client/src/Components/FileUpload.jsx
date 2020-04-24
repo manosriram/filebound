@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 import URL from "./URL";
 import { useLocation } from "react-router-dom";
+import Progress from './Progress';
 var sz = 0;
 
 const bytesToMegaBytes = bytes => {
@@ -18,6 +19,7 @@ const FileUpload = () => {
     const [dwn, setdwn] = useState(1);
     const [err, setErr] = useState("");
     const [ld, isld] = useState(false);
+    const [uploadPercentage, setUploadPercentage] = useState(0);
     let loc = useLocation();
 
     let path = "";
@@ -45,9 +47,16 @@ const FileUpload = () => {
                 .post("/file/upload", fd, {
                     headers: {
                         "Content-Type": "multipart/form-data"
-                    }
+                    },
+                    onUploadProgress: progressEvent => {
+                        let prog = parseInt(Math.round(progressEvent.loaded * 100) / progressEvent.total);
+                        if (prog <= 95)
+                            setUploadPercentage(prog);
+                        else setUploadPercentage(99);
+                    },
                 })
                 .then(res2 => {
+                    setUploadPercentage(100);
                     if (!res2.data.scs) setErr(res2.data.msg);
                     else surl(res2.data.url);
 
@@ -68,7 +77,6 @@ const FileUpload = () => {
         updPass("");
     };
 
-    if (ld) return <i className="fa fa-refresh fa-spin"></i>;
 
     if (url) {
         path = `${window.location.href}download/${url}`;
@@ -89,6 +97,10 @@ const FileUpload = () => {
                 <label for="files" id="file_label">
                     Select Files
                 </label>
+                <br />
+                
+                <Progress percentage={uploadPercentage} />
+    
                 <br />
                 {file.map(fl => {
                     if (fl.lastModified) {

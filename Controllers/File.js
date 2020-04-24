@@ -87,10 +87,10 @@ router.post("/upload", async (req, res) => {
     }
 
     const zippedFile = zipFile(req.files.files).toBuffer();
-    const hashKey = crypto.randomBytes(32);
+    const hashKey = crypto.randomBytes(32).toString('hex');
 
-    let encryptedBuffer = encryptBuffer(zippedFile, hashKey.toString("hex"));
-    var genn = nanoid(32) + '|' + hashKey.toString('hex');
+    let encryptedBuffer = encryptBuffer(zippedFile, hashKey);
+    var genn = nanoid(32);
 
     if (password) {
         var salt = bcrypt.genSaltSync(10);
@@ -109,7 +109,7 @@ router.post("/upload", async (req, res) => {
     putItem(genn, expires, password, req.files.files, downloads);
     try {
         putS3Item(genn, encryptedBuffer, false, function(err, data) {
-            if (!err) return res.json({ scs: true, url: genn });
+            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey });
             else console.log(err);
         });
     } catch (er) {
@@ -125,7 +125,6 @@ router.post("/upload", async (req, res) => {
 
 router.post("/verifyLink", async (req, res) => {
     const { url } = req.body; // no .zip
-    console.log("url : ", url);
     try {
         getItem(url, resp => {
             if (!isEmpty(resp)) {
@@ -179,7 +178,7 @@ router.post("/download", async (req, res) => {
 router.post("/decryptFile", async (req, res) => {
     let { url, hash } = req.body;
 
-    const encryptedData = await getS3Item(url + '|' + hash + ".zip");
+    const encryptedData = await getS3Item(url + '.zip');
     if (encryptedData.scs) {
         const decryptedData = await decryptBuffer(
             encryptedData.buffer.Body,
@@ -188,7 +187,8 @@ router.post("/decryptFile", async (req, res) => {
         var zipp = new zip();
         zipp.file("download.zip", decryptedData);
         return res.json({ scs: true, data: decryptedData });
-    } else res.json({ scs: false, msg: "Link Expired!" });
+    } else
+        res.json({ scs: false, msg: "Link Expired!" });
 });
 module.exports = router;
 
