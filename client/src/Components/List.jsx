@@ -6,6 +6,7 @@ const List = props => {
     const [ld, isld] = useState(false);
     const [dec, setDec] = useState("");
     let loc = useLocation();
+
     const getDecryptURL = async () => {
         const url = loc.pathname.split("/")[2];
         const resp = await fetch("/file/decryptFile", {

@@ -6,7 +6,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
 const isEmpty = obj => {
-    return (JSON.stringify(obj) == "{}");
+    return JSON.stringify(obj) == "{}";
 };
 
 const getS3Item = async url => {
@@ -17,23 +17,22 @@ const getS3Item = async url => {
 
     try {
         const buffer = await s3.getObject(params).promise();
-        return buffer;
+        return { buffer: buffer, scs: true };
     } catch (er) {
-        return ({scs: false, code: er.code });
+        return { scs: false, code: er.code };
     }
 };
 
-const putS3Item = (genn, data, dec) => {
+const putS3Item = (genn, data, dec, cb) => {
     const params = {
         Bucket: process.env.BUCKET,
         ACL: process.env.ACL,
         Body: data,
-        Key: (dec == true) ? `${genn}` : `${genn}.zip`
+        Key: dec == true ? `${genn}` : `${genn}.zip`
     };
 
     s3.putObject(params, async (err, data) => {
-        console.log("done");
-        if (err) console.log(err);
+        return cb(err, data);
     });
 };
 
@@ -42,7 +41,7 @@ const getItem = async (surl, cb) => {
         TableName: TABLE,
         Key: {
             surl: surl
-        },
+        }
     };
     docClient.get(params, (err, data) => {
         if (!err) cb(data);
@@ -77,8 +76,7 @@ const deleteS3Item = url => {
 
 const updateItem = async url => {
     getItem(url, async cbResponse => {
-        if (isEmpty(cbResponse))
-            return { scs: false, msg: "Link Expired" };
+        if (isEmpty(cbResponse)) return { scs: false, msg: "Link Expired" };
 
         const params = {
             TableName: TABLE,
@@ -104,7 +102,7 @@ const updateItem = async url => {
     });
 };
 
-const putItem = async (surl, expires, password, files, downloads) => {
+const putItem = async (surl, expires, password, files, downloads, passkey) => {
     let now = Date.now();
     const exp = now + expires * 60000;
     let names = [];
@@ -128,7 +126,8 @@ const putItem = async (surl, expires, password, files, downloads) => {
             expires: exp,
             names: names,
             password: password == "" ? false : password,
-            downloads: downloads
+            downloads: downloads,
+            passkey: passkey
         }
     };
     try {
