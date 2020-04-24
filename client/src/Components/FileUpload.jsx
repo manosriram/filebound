@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 import URL from "./URL";
 import { useLocation } from "react-router-dom";
+var sz = 0;
 
 const bytesToMegaBytes = bytes => {
     return (bytes / (1024 * 1024)).toFixed(3);
@@ -25,6 +26,7 @@ const FileUpload = () => {
         fileList = e.target.files;
         for (let t = 0; t < e.target.files.length; ++t) {
             setFile(file => [...file, fileList[t]]);
+            sz += e.target.files[t].size;
         }
     };
 
@@ -58,6 +60,7 @@ const FileUpload = () => {
 
     const deleteFile = inn => {
         setFile(file.filter(ff => ff.lastModified != inn));
+        sz -= file.filter(ff => ff.lastModified == inn)[0].size;
     };
 
     const clearPass = () => {
@@ -145,6 +148,8 @@ const FileUpload = () => {
                     />
                 )}
                 <br />
+
+                <h3>{sz == 0.000 ? 0 : bytesToMegaBytes(sz)} MB</h3>
                 <input type="submit" value="Upload" />
             </form>
         </Fragment>
