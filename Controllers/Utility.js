@@ -70,6 +70,7 @@ const deleteS3Item = url => {
     };
 
     s3.deleteObject(params, async (err, data) => {
+        console.log("deleted");
         if (!err) return { scs: true, msg: "Deleted!" };
     });
 };
@@ -102,7 +103,7 @@ const updateItem = async url => {
     });
 };
 
-const putItem = async (surl, expires, password, files, downloads, passkey) => {
+const putItem = async (surl, expires, password, files, downloads) => {
     let now = Date.now();
     const exp = now + expires * 60000;
     let names = [];
@@ -127,7 +128,6 @@ const putItem = async (surl, expires, password, files, downloads, passkey) => {
             names: names,
             password: password == "" ? false : password,
             downloads: downloads,
-            passkey: passkey
         }
     };
     try {
@@ -161,5 +161,6 @@ module.exports = {
     getObject: getObject,
     putS3Item: putS3Item,
     getS3Item: getS3Item,
-    isEmpty: isEmpty
+    isEmpty: isEmpty,
+    deleteS3Item: deleteS3Item
 };

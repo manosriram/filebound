@@ -1,25 +1,27 @@
+import {save} from 'save-file';
 import React, { Fragment, useState } from "react";
 import Download from "./Download";
 import { useLocation } from "react-router-dom";
+const Buffer = require("buffer/").Buffer;
 
 const List = props => {
     const [ld, isld] = useState(false);
     const [dec, setDec] = useState("");
+    const [fd, setFd] = useState({});
     let loc = useLocation();
 
     const getDecryptURL = async () => {
-        const url = loc.pathname.split("/")[2];
+        const hash = loc.pathname.split("|")[1];
+        const url = loc.pathname.split("|")[0].split("/")[2];
         const resp = await fetch("/file/decryptFile", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ url: url })
+            body: JSON.stringify({ url: url, hash: hash })
         });
         const data = await resp.json();
-        setDec(
-            "https://reservebckt.s3.ap-south-1.amazonaws.com/" + data.decUrl
-        );
+        setFd(data.data);
         isld(false);
     };
 
@@ -29,13 +31,14 @@ const List = props => {
     }, []);
 
     const handleDownload = async () => {
-        await fetch("/file/download", {
+        const resp = await fetch("/file/download", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ url: props.half })
         });
+        await save(fd, 'download.zip');
     };
 
     if (ld) return <i className="fa fa-refresh fa-spin"></i>;
@@ -50,7 +53,7 @@ const List = props => {
                     );
                 })}
                 <br />
-                <a href={dec} onClick={handleDownload}>
+                <a onClick={handleDownload}>
                     down
                 </a>
             </Fragment>

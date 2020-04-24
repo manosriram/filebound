@@ -14,16 +14,17 @@ const Download = props => {
     const [filePass, setFilePass] = useState("");
     const [total, setTotal] = useState({});
     const [half, setHalf] = useState("");
+    const [hash, setHash] = useState("");
     let loc = useLocation();
 
     React.useEffect(() => {
         isld(true);
         let ph = loc.pathname.split("/")[2];
         listFiles(ph);
+        setHash(loc.pathname.split("/")[3]);
         setHalf(ph);
         surl(BASE + ph + ".zip");
         isld(false);
-
     }, []);
 
     const handleChange = e => {
@@ -46,12 +47,12 @@ const Download = props => {
         } else setErr(data.msg);
     };
 
-    if (props.valid) return <List names={names} url={props.url} half={half} />
     if (ld) return <i className="fa fa-refresh fa-spin"></i>
+    if (props.valid) return <List names={names} half={half} />
 
     if (pass) return <Verify url={half} />;
     else if (err) return <h3>{err}</h3>
-    else return <List names={names} url={url} half={half} />;
+    else return <List names={names} half={half} />;
 };
 
 export default Download;
