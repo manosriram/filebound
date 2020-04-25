@@ -14,6 +14,7 @@ const download = require("download");
 const { algorithm } = process.env;
 const zip = require("jszip");
 
+
 const {
     encryptFileName,
     getItem,
@@ -109,7 +110,7 @@ router.post("/upload", async (req, res) => {
     putItem(genn, expires, password, req.files.files, downloads);
     try {
         putS3Item(genn, encryptedBuffer, false, function(err, data) {
-            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey });
+            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey, files: req.files.files });
             else console.log(err);
         });
     } catch (er) {
@@ -185,7 +186,7 @@ router.post("/decryptFile", async (req, res) => {
             hash
         );
         var zipp = new zip();
-        zipp.file("download.zip", decryptedData);
+        zipp.file("Archive.zip", decryptedData);
         return res.json({ scs: true, data: decryptedData });
     } else
         res.json({ scs: false, msg: "Link Expired!" });

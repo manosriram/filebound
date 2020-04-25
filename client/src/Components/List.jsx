@@ -2,7 +2,7 @@ import {save} from 'save-file';
 import React, { Fragment, useState } from "react";
 import Download from "./Download";
 import { useLocation } from "react-router-dom";
-const Buffer = require("buffer/").Buffer;
+import "./App.css"
 
 const List = props => {
     const [ld, isld] = useState(false);
@@ -41,7 +41,7 @@ const List = props => {
         await save(fd, 'download.zip');
     };
 
-    if (ld) return <i className="fa fa-refresh fa-spin"></i>;
+    if (ld) return <h3>Spinning</h3>
     else {
         return (
             <Fragment>
