@@ -22,9 +22,9 @@ const Local = props => {
 
     return (
         <Fragment>
-        {console.log(props)}
             {props.data.map(lst => {
                 return (
+                <div id="uponRoot">
                     <div id="upon">
                         {lst.files.length && (
                             <>
@@ -73,6 +73,7 @@ const Local = props => {
                         )}
                         <br />
                     </div>
+                </div>
                 );
             })}
         </Fragment>

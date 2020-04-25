@@ -1,5 +1,9 @@
 import { FocusStyleManager } from "@blueprintjs/core";
 import {
+    Popover,
+    Position,
+    Menu,
+    MenuItem,
     Icon,
     Checkbox,
     Tooltip,
@@ -15,6 +19,7 @@ import { useLocation } from "react-router-dom";
 import Progress from "./Progress";
 import Local from "./Local";
 import "./FileMain.css";
+import './Media.css'
 var sz = 0;
 
 //blueprint-js/core includes
@@ -49,6 +54,10 @@ const FileUpload = () => {
     const [ld, isld] = useState(false);
     const [uploadPercentage, setUploadPercentage] = useState(0);
     let loc = useLocation();
+
+    const style = {
+        width: uploadPercentage + '%'
+    };
 
     const lockButton = (
         <Tooltip
@@ -146,6 +155,11 @@ const FileUpload = () => {
         sz -= file.filter(ff => ff.lastModified == inn)[0].size;
     };
 
+    const navStyle = {
+        margin: "0 auto",
+        width: "480px"
+    };
+
     const clearPass = () => {
         setPass(!pass);
         updPass("");
@@ -162,70 +176,27 @@ const FileUpload = () => {
         path = `${window.location.href}download/${url}`;
         return <URL url={path} />;
     }
-
+const expiryMenu  = (
+            <Menu>
+                <MenuItem text="5 Minutes" onClick={() => setExp(5)}/>
+                <MenuItem text="30 Minutes" onClick={() => setExp(30)}/>
+                <MenuItem text="1 Hour" onClick={() => setExp(60)}/>
+                <MenuItem text="2.5 Hours" onClick={() => setExp(150)}/>
+            </Menu>
+        );
+const downloadMenu = (
+            <Menu>
+                <MenuItem text="1 Download" onClick={() => setdwn(1)}/>
+                <MenuItem text="3 Downloads" onClick={() => setdwn(3)}/>
+                <MenuItem text="5 Downloads" onClick={() => setdwn(5)}/>
+                <MenuItem text="10 Downloads" onClick={() => setdwn(10)}/>
+            </Menu>
+        );
     return (
         <Fragment>
             {err && <h3>{err}</h3>}
-            <div id="home">
-                <form onSubmit={handleSubmit}>
-                    <Progress percentage={!err ? uploadPercentage : 0} />
-
-                    <br />
-
-                    <label id="expires">Expires after {"  "}</label>
-                    <div id="tools">
-                        <select
-                            id="exp"
-                            name="exp"
-                            onChange={e => setExp(e.target.value)}
-                        >
-                            <option value="5">5 Minutes</option>
-                            <option value="30">30 Minutes</option>
-                            <option value="60">1 Hour</option>
-                            <option value="150">2.5 Hours</option>
-                        </select>
-                        <label>
-                            {"  "} OR {"  "}
-                        </label>
-                        <select
-                            id="dwn"
-                            name="dwn"
-                            onChange={e => setdwn(e.target.value)}
-                        >
-                            <option value="1">1 Download</option>
-                            <option value="3">3 Downloads</option>
-                            <option value="5">5 Downloads</option>
-                            <option value="10">10 Downloads</option>
-                        </select>
-                        <br />
-                        <br />
-
-                        <Checkbox
-                            label="Password Protect"
-                            onChange={() => clearPass()}
-                            onClick={Toggle}
-                        />
-
-                        <div id="pass">
-                            <InputGroup
-                                id="pass"
-                                fill={true}
-                                disabled={!pass}
-                                small={true}
-                                placeholder="Password"
-                                rightElement={lockButton}
-                                type={showPassword ? "text" : "password"}
-                                onChange={e => updPass(e.target.value)}
-                            />
-                        </div>
-
-                        <br />
-                        <h3>{sz == 0.0 ? 0 : bytesToMegaBytes(sz)} MB</h3>
-                    </div>
-                    <Button type="submit" icon="upload" text="Upload" />
-                </form>
-            </div>
             <div id="container">
+        <div id="left">
                 <div id="box">
                     <div
                         {...getRootProps({ className: "dropzone" })}
@@ -234,7 +205,7 @@ const FileUpload = () => {
                         <input {...getInputProps()} />
                         {!file.length && (
                             <div id="add">
-                                <h3>Drop files or click to add them</h3>
+                                <h3>Drag or click to add files upto 500MB.</h3>
                                 <br />
                                 <Icon icon="add" iconSize={30} />
                             </div>
@@ -281,8 +252,64 @@ const FileUpload = () => {
                             }
                         })}
                     </div>
+                    <h3 id="size"><code>{bytesToMegaBytes(sz)} MB</code></h3>
                 </div>
+                <form id="submitForm" onSubmit={handleSubmit}>
+                    <div class="bp3-progress-bar bp3-intent-primary">
+                          <div class="bp3-progress-meter" style={style}></div>
+                    </div>
+                          {uploadPercentage} %
+                    <br />
+
+                    <strong><label id="expires">Expires after {"  "}</label></strong>
+                    <div id="tools">
+        
+                        <Popover className="bp3-dark" content={expiryMenu} position={Position.BOTTOM}>
+                            <Button icon="time" text={exp > 30 ? (exp/60 + " Hour" + ((exp/60)==1 ? "" : "s")) : exp + " Minutes"} />
+                        </Popover>
+
+                        <label>
+                            {"  "} <strong>OR</strong> {"  "}
+                        </label>
+
+
+                        <Popover className="bp3-dark" content={downloadMenu} position={Position.BOTTOM}>
+                            <Button icon="download" text={dwn > 1 ? (dwn + " Downloads") : (dwn + " Download")} />
+                        </Popover>
+
+                        <br />
+                        <br />
+
+                        <Checkbox
+                            id="passCheck"
+                            label="Password Protect URL"
+                            onChange={() => clearPass()}
+                            onClick={Toggle}
+                        />
+                        <div id="pass">
+                            <InputGroup
+                                id="pass"
+                                fill={true}
+                                disabled={!pass}
+                                small={false}
+                                placeholder="Password"
+                                leftElement={lockButton}
+                                type={showPassword ? "text" : "password"}
+                                onChange={e => updPass(e.target.value)}
+                            />
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+        <div className="bp3-dark">
+                    <Button type="submit" icon="upload" text="Upload" />
+        </div>
+                </form>
             </div>
+        <div id="right">
+            <Local data={getLS()} />
+        </div>
+        </div>
         </Fragment>
     );
 };

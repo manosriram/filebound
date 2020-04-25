@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+body, html {
+    font-family: Fira Code;
+}
+
 #home {
     display: none;
 }
@@ -12,9 +16,9 @@
     height: 600px;
     text-align: center;
     margin: auto;
-    border: solid 4px black;
-    padding: 32px;
+    padding: 12px;
 
+    border: 4px solid black;
     position: absolute;
     left: 0;
     right: 0;
@@ -26,18 +30,22 @@
     overflow: auto;
 }
 
-.dropzone {
-    width: 550px;
-    height: 350px;
-    border: solid 4px black;
+div .dropzone {
+    width: auto;
+    height: 25em;
+}
 
+.dropzone {
+    border: solid 4px black;
     position: relative;
     width: 500px;
-    height: 500px;
+    height: 340px;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
 #add:hover {
-    color: lightblue;
+    color: darkblue;
     cursor: pointer;
 }
 
@@ -57,6 +65,7 @@
     width: 95%;
     margin: auto;
     margin-top: 5px;
+    word-break: break-word;
 }
 
 #card-name h4 {
@@ -72,4 +81,63 @@
 }
 #doc {
     float: left;
+}
+
+#submitForm {
+    width: 500px;
+}
+#size {
+    float: right;
+}
+
+#left {
+  float: left;
+}
+
+#right {
+  width: 400px;
+  float: right;
+}
+
+#mx {	
+    margin: auto;	
+    text-align: center;	
+}	
+.hidden {	
+    display: none;	
+}	
+#mm {	
+    display: flex;	
+    width: 25em;	
+    margin: auto;	
+    padding: 1em;	
+}	
+#drp,	
+#down,	
+#copy {	
+    justify-content: space-between;	
+    margin-left: 20px;	
+    order: 2;	
+}	
+p {	
+    margin: auto;	
+    text-align: center;	
+}	
+#archive {	
+    padding-right: 25px;	
+    margin: auto;	
+}	
+.dropzone {	
+    height: 30em;	
+    border: 2px solid black;	
+    width: 30em;	
+}	
+#exp, #dwn{	
+    border: 2px solid black;	
+    font-size: 16px;	
+    outline: none;	
+}	
+#pass {	
+    width: 20em;	
+    display:inline-block;	
 }
