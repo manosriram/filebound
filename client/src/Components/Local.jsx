@@ -22,6 +22,7 @@ const Local = props => {
 
     return (
         <Fragment>
+        {console.log(props)}
             {props.data.map(lst => {
                 return (
                     <div id="upon">
