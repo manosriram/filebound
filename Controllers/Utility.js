@@ -132,7 +132,7 @@ const putItem = async (surl, expires, password, files, downloads) => {
     };
     try {
         const data = await docClient.put(params).promise();
-        return { scs: true, surl: genn };
+        return { scs: true, surl: surl, expires: exp };
     } catch (err) {
         return { scs: false, err: err };
     }

@@ -107,10 +107,10 @@ router.post("/upload", async (req, res) => {
     if (limit > 1073741824)
         return res.json({ scs: false, msg: "1GB capacity exceeded." });
 
-    putItem(genn, expires, password, req.files.files, downloads);
+    const fileData = await putItem(genn, expires, password, req.files.files, downloads);
     try {
         putS3Item(genn, encryptedBuffer, false, function(err, data) {
-            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey, files: req.files.files });
+            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey, files: req.files.files, expires: fileData.expires });
             else console.log(err);
         });
     } catch (er) {

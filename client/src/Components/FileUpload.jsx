@@ -119,25 +119,27 @@ const FileUpload = () => {
                         if (!res2.data.files.length) {
                             sz = res2.data.files.size;
                             fileMetaData.push({
-                                name: res2.data.files.name
+                                name: res2.data.files.name,
                             });
                             const data = {
                                 files: fileMetaData,
                                 url: res2.data.url,
-                                totalSize: sz
+                                totalSize: sz,
+                                expires: res2.data.expires
                             };
                             saveLS(data);
                         } else {
                             res2.data.files.map(file => {
                                 sz += file.size;
                                 fileMetaData.push({
-                                    name: file.name
+                                    name: file.name,
                                 });
                             });
                             const data = {
                                 files: fileMetaData,
                                 url: res2.data.url,
-                                totalSize: sz
+                                totalSize: sz,
+                                expires: res2.data.expires
                             };
                             saveLS(data);
                         }

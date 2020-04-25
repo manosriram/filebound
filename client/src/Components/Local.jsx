@@ -12,6 +12,9 @@ import {
     Button
 } from "@blueprintjs/core";
 import { FocusStyleManager } from "@blueprintjs/core";
+const ClipboardJS = require("clipboard");
+var clipboard = new ClipboardJS('#copy');
+console.log(clipboard);
 
 const bytesToMegaBytes = bytes => {
     return (bytes / (1024 * 1024)).toFixed(3);
@@ -23,6 +26,7 @@ const Local = props => {
     return (
         <Fragment>
             {props.data.map(lst => {
+                if (lst.expires > new Date().getTime()) {
                 return (
                 <div id="uponRoot">
                     <div id="upon">
@@ -62,6 +66,7 @@ const Local = props => {
                             <Popover id="down" content="Copied!" position={Position.RIGHT}>
                                     <Tooltip position={Position.RIGHT}>
                                         <Icon
+                                            data-clipboard-text={window.location.href + "download/" + lst.url}
                                             id="copy"
                                             icon="duplicate"
                                             iconSize={25}
@@ -75,6 +80,7 @@ const Local = props => {
                     </div>
                 </div>
                 );
+            }
             })}
         </Fragment>
     );
