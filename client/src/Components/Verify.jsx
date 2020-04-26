@@ -1,5 +1,8 @@
 import React, { Fragment, useState } from "react";
 import Download from "./Download";
+import "./App.css";
+import {InputGroup, Toaster, Toast} from '@blueprintjs/core';
+import './Media.css';
 
 const Verify = props => {
     const [filePass, setFilePass] = useState("");
@@ -27,15 +30,33 @@ const Verify = props => {
     if (valid) return <Download valid={true} url={props.url} />;
     else {
         return (
-            <form action="" onSubmit={handleSubmit}>
-                {msg}
-                <input
+            <form id="auth-form" action="" onSubmit={handleSubmit}>
+            <div id="message">
+                {msg && (
+                    <div id="toast" onClick={() => setMSG("")}>
+                        <Toaster>
+                            <Toast
+                                intent="danger"
+                                timeout={5000}
+                                message={msg}
+                            />
+                        </Toaster>
+                    </div>
+                )}
+            </div>
+            <div id="passgroup">
+                <InputGroup
+                    autofocus="on"
                     type="password"
                     name="pass"
+                    placeholder="URL Password"
+                    fill={true}
+                    large={true}
                     onChange={e => handleChange(e)}
                 />
                 <br />
-                <input type="submit" value="Verify" />
+                <input className="bp3-button" id="sub" type="submit" value="Verify" />
+            </div>
             </form>
         );
     }

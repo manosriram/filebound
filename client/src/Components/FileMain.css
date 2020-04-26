@@ -8,6 +8,11 @@ body, html {
     color: white;
 }
 
+.bp3-input {
+    font-family: Fira Code;
+    border: 1px solid #5C7080;
+}
+
 #home {
     display: none;
 }
@@ -145,7 +150,7 @@ p {
   display: none;
 }
 #exp, #dwn{	
-    border: 2px solid black;	
+    border: 2px solid white;	
     font-size: 16px;	
     outline: none;	
 }	

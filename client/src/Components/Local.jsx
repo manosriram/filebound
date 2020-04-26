@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import {
     Tooltip,
     Icon,
@@ -22,29 +22,42 @@ const bytesToMegaBytes = bytes => {
 
 const Local = props => {
     FocusStyleManager.onlyShowFocusOnTabs();
+    const [time, setTime] = useState([]);
 
    React.useEffect(() => {
        var updatedData = [];
        const data = JSON.parse(localStorage.getItem("session"));
        updatedData = data.filter(file => file.expires > new Date().getTime());
        localStorage.setItem("session", JSON.stringify(updatedData));
+    }, []);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            setTime([]);
+        }, 1000);
     });
 
     return (
         <Fragment>
-        {JSON.parse(localStorage.getItem("session")).length > 0 && (
-            <>
-                <h3>Previous unexpired uploads</h3>
-                <Divider />
-            </>
-        )}
             {props.data.map(lst => {
                 const now = new Date().getTime();
-                console.log(moment.utc("2018-02-21 23:31:49.391"));
+                const expires = lst.expires;
+                const hours = moment.duration(expires - now).hours(),
+                      minutes = moment.duration(expires - now).minutes(),
+                      seconds = moment.duration(expires - now).seconds();
                 if (lst.expires > now) {
                 return (
                 <div id="uponRoot">
                     <div id="upon">
+                    <div id="remaining">
+                    <p id="rem">Expires in {"  "}
+                    <strong>
+                    {hours < 10 ? ("0" + hours) : hours}:
+                    {minutes < 10 ? ("0" + minutes) : minutes}:
+                    {seconds < 10 ? ("0" + seconds) : seconds}
+                    </strong>
+                    </p>
+                    </div>
                         {lst.files.length && (
                             <>
                                 <div id="mm" class="bp3-dark bp3-card ">
@@ -68,6 +81,7 @@ const Local = props => {
                                         position={Position.BOTTOM}
                                     >
                                         <Button
+                                            id="filelist"
                                             icon="chevron-down"
                                             text={lst.files.length + " file" + (lst.files.length > 1 ? "s" : "")}
                                         />

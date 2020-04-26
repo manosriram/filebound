@@ -3,6 +3,7 @@ import React, { Fragment, useState } from "react";
 import Download from "./Download";
 import { useLocation } from "react-router-dom";
 import "./App.css"
+import {Icon} from '@blueprintjs/core';
 
 const List = props => {
     const [ld, isld] = useState(false);
@@ -38,25 +39,31 @@ const List = props => {
             },
             body: JSON.stringify({ url: props.half })
         });
-        await save(fd, 'download.zip');
+        await save(fd, 'Archive.zip');
     };
 
-    if (ld) return <h3>Spinning</h3>
+    if (ld) return <div id="spin"></div>
     else {
         return (
-            <Fragment>
+            <>
+            <div id="list">
                 {props.names.map(name => {
+                    console.log(name);
                     return (
                         <Fragment>
-                            <h4>{name}</h4>
+                            <h2>{name}</h2>
                         </Fragment>
                     );
                 })}
-                <br />
+            </div>
+            <div id="download">
+            <h2>
                 <a onClick={handleDownload}>
-                    down
+                    <Icon icon="download" iconSize={25} /> Download
                 </a>
-            </Fragment>
+            </h2>
+            </div>
+            </>
         );
     }
 };

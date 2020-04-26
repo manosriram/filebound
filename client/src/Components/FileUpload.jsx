@@ -25,7 +25,6 @@ import Local from "./Local";
 import "./FileMain.css";
 import "./Media.css";
 var sz = 0;
-const Logo = require("./Logo.png");
 
 //blueprint-js/core includes
 function saveLS(data) {
@@ -312,12 +311,12 @@ const FileUpload = () => {
                             </>
                         )}
                         <div id="tools">
-                            <div id="time">
                                 <strong>
                                     <span id="expires">
                                         Expires after {"  "}
                                     </span>
                                 </strong>
+                            <div id="time">
                                 <Popover
                                     className="bp3-dark"
                                     content={expiryMenu}
@@ -355,7 +354,6 @@ const FileUpload = () => {
                                 </Popover>
                             </div>
                             <br />
-                            <br />
 
                             <Checkbox
                                 id="passCheck"
@@ -378,7 +376,7 @@ const FileUpload = () => {
                             <br />
                             <br />
                         </div>
-                        <div className="bp3-dark">
+                        <div className="bp3-dark" id="upload">
                             <Button type="submit" icon="upload" text="Upload" />
                         </div>
                     </form>

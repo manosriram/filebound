@@ -1,5 +1,4 @@
 @media (min-width: 1281px) {
-
 }
 
 /* 
@@ -8,9 +7,14 @@
 */
 
 @media (min-width: 768px) and (max-width: 1280px) {
+    .bp3-button {
+        font-size: 16px;
+    }
     #container {
         border: none;
         height: 950px;
+        border-radius: 0px;
+        line-height: 1.5;
     }
     #left {
         float: none;
@@ -66,30 +70,76 @@
         padding: 0;
     }
     .dropzone {
-        border: solid 4px black;
+        border: solid 4px white;
 
         position: relative;
         width: auto;
         overflow: hidden;
         overflow-y: scroll;
         float: center;
+        min-height: 100vh;
     }
     #submitForm {
-        width: auto;
+        float: left;
+        width: -webkit-fill-available;
     }
     #container {
         border: none;
+        border-radius: 0;
+        padding: 0;
     }
     #left {
         width: auto;
         float: none;
     }
     #right {
-        width: auto;
+        width: 75%;
+        margin: auto;
         padding-top: 10px;
+        float: none;
     }
     #uponRoot {
         width: auto;
         margin: 0 auto;
+    }
+    #mm {
+        width: 20em;
+        padding: 0.4em;
+        margin: auto;
+    }
+    #copy {
+        display: none;
+    }
+    .bp3-button {
+        width: max-content;
+    }
+    #time,
+    #remaining {
+        padding-top: 10px;
+    }
+    .bp3-popover-wrapper {
+        margin: auto;
+    }
+    #drp,
+    #down,
+    #copy {
+        margin: auto;
+        justify-content: space-between;
+        margin-left: 20px;
+        order: 2;
+    }
+    #archive {
+        padding-right: 15px;
+        margin: auto;
+    }
+    #upload {
+        margin-bottom: 15px;
+    }
+
+    #list {
+        border-radius: 0;
+        background: white;
+        color: black;
+        margin-top: 100px;
     }
 }

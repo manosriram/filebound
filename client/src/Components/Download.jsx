@@ -4,6 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import List from "./List";
 import BASE from "./Config";
+import "./App.css";
 
 const Download = props => {
     const [ld, isld] = useState(false);
@@ -48,11 +49,11 @@ const Download = props => {
         } else setErr(data.msg);
     };
 
-    if (ld) return <i className="fa fa-refresh fa-spin"></i>
+    if (ld) return <div id="spin"></div>
     if (props.valid) return <List names={names} half={half} />
 
     if (pass) return <Verify url={half} />;
-    else if (err) return <h3>{err}</h3>
+    else if (err) return <h3 id="err">{err}</h3>
     else return <List names={names} half={half} />;
 };
 
