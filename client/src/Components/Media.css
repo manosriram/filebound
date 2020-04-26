@@ -1,4 +1,5 @@
 @media (min-width: 1281px) {
+
 }
 
 /* 
@@ -6,7 +7,28 @@
   ##Screen = B/w 1025px to 1280px
 */
 
-@media (min-width: 1025px) and (max-width: 1280px) {
+@media (min-width: 768px) and (max-width: 1280px) {
+    #container {
+        border: none;
+        height: 950px;
+    }
+    #left {
+        float: none;
+        margin: auto;
+    }
+    #expires {
+        font-size: larger;
+    }
+    #submitForm {
+        margin: auto;
+        text-align: center;
+        padding-top: 50px;
+    }
+    #right {
+        margin-top: 10px;
+        width: auto;
+        float: none;
+    }
 }
 
 /* 
@@ -42,7 +64,7 @@
     * {
         margin: 0;
         padding: 0;
-        }
+    }
     .dropzone {
         border: solid 4px black;
 
@@ -67,17 +89,7 @@
         padding-top: 10px;
     }
     #uponRoot {
-    width: auto;
-  margin: 0 auto;
-  }
-
-
-
-
-
-
-
-
-
-
+        width: auto;
+        margin: 0 auto;
+    }
 }

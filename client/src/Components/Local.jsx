@@ -14,7 +14,7 @@ import {
 import { FocusStyleManager } from "@blueprintjs/core";
 const ClipboardJS = require("clipboard");
 var clipboard = new ClipboardJS('#copy');
-console.log(clipboard);
+var moment = require('moment');
 
 const bytesToMegaBytes = bytes => {
     return (bytes / (1024 * 1024)).toFixed(3);
@@ -23,10 +23,25 @@ const bytesToMegaBytes = bytes => {
 const Local = props => {
     FocusStyleManager.onlyShowFocusOnTabs();
 
+   React.useEffect(() => {
+       var updatedData = [];
+       const data = JSON.parse(localStorage.getItem("session"));
+       updatedData = data.filter(file => file.expires > new Date().getTime());
+       localStorage.setItem("session", JSON.stringify(updatedData));
+    });
+
     return (
         <Fragment>
+        {JSON.parse(localStorage.getItem("session")).length > 0 && (
+            <>
+                <h3>Previous unexpired uploads</h3>
+                <Divider />
+            </>
+        )}
             {props.data.map(lst => {
-                if (lst.expires > new Date().getTime()) {
+                const now = new Date().getTime();
+                console.log(moment.utc("2018-02-21 23:31:49.391"));
+                if (lst.expires > now) {
                 return (
                 <div id="uponRoot">
                     <div id="upon">
@@ -54,7 +69,7 @@ const Local = props => {
                                     >
                                         <Button
                                             icon="chevron-down"
-                                            text={lst.files.length + " files"}
+                                            text={lst.files.length + " file" + (lst.files.length > 1 ? "s" : "")}
                                         />
                                     </Popover>
                                     <a id="down" href={"download/" + lst.url}>

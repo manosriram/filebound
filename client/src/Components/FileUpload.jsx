@@ -1,5 +1,9 @@
 import { FocusStyleManager } from "@blueprintjs/core";
 import {
+    FileInput,
+    Toaster,
+    Toast,
+    Divider,
     Popover,
     Position,
     Menu,
@@ -19,8 +23,9 @@ import { useLocation } from "react-router-dom";
 import Progress from "./Progress";
 import Local from "./Local";
 import "./FileMain.css";
-import './Media.css'
+import "./Media.css";
 var sz = 0;
+const Logo = require("./Logo.png");
 
 //blueprint-js/core includes
 function saveLS(data) {
@@ -56,7 +61,7 @@ const FileUpload = () => {
     let loc = useLocation();
 
     const style = {
-        width: uploadPercentage + '%'
+        width: uploadPercentage + "%"
     };
 
     const lockButton = (
@@ -119,7 +124,7 @@ const FileUpload = () => {
                         if (!res2.data.files.length) {
                             sz = res2.data.files.size;
                             fileMetaData.push({
-                                name: res2.data.files.name,
+                                name: res2.data.files.name
                             });
                             const data = {
                                 files: fileMetaData,
@@ -132,7 +137,7 @@ const FileUpload = () => {
                             res2.data.files.map(file => {
                                 sz += file.size;
                                 fileMetaData.push({
-                                    name: file.name,
+                                    name: file.name
                                 });
                             });
                             const data = {
@@ -144,15 +149,16 @@ const FileUpload = () => {
                             saveLS(data);
                         }
                     }
-
                     isld(false);
+                    setUploadPercentage(0);
                 });
         } catch (err) {
             console.log(err);
         }
     };
 
-    const deleteFile = inn => {
+    const deleteFile = (e, inn) => {
+        e.stopPropagation();
         setFile(file.filter(ff => ff.lastModified != inn));
         sz -= file.filter(ff => ff.lastModified == inn)[0].size;
     };
@@ -178,142 +184,227 @@ const FileUpload = () => {
         path = `${window.location.href}download/${url}`;
         return <URL url={path} />;
     }
-const expiryMenu  = (
-            <Menu>
-                <MenuItem text="5 Minutes" onClick={() => setExp(5)}/>
-                <MenuItem text="30 Minutes" onClick={() => setExp(30)}/>
-                <MenuItem text="1 Hour" onClick={() => setExp(60)}/>
-                <MenuItem text="2.5 Hours" onClick={() => setExp(150)}/>
-            </Menu>
-        );
-const downloadMenu = (
-            <Menu>
-                <MenuItem text="1 Download" onClick={() => setdwn(1)}/>
-                <MenuItem text="3 Downloads" onClick={() => setdwn(3)}/>
-                <MenuItem text="5 Downloads" onClick={() => setdwn(5)}/>
-                <MenuItem text="10 Downloads" onClick={() => setdwn(10)}/>
-            </Menu>
-        );
+    const expiryMenu = (
+        <Menu>
+            <MenuItem text="5 Minutes" onClick={() => setExp(5)} />
+            <MenuItem text="30 Minutes" onClick={() => setExp(30)} />
+            <MenuItem text="1 Hour" onClick={() => setExp(60)} />
+            <MenuItem text="2.5 Hours" onClick={() => setExp(150)} />
+        </Menu>
+    );
+    const downloadMenu = (
+        <Menu>
+            <MenuItem text="1 Download" onClick={() => setdwn(1)} />
+            <MenuItem text="3 Downloads" onClick={() => setdwn(3)} />
+            <MenuItem text="5 Downloads" onClick={() => setdwn(5)} />
+            <MenuItem text="10 Downloads" onClick={() => setdwn(10)} />
+        </Menu>
+    );
     return (
         <Fragment>
-            {err && <h3>{err}</h3>}
+            <div id="message">
+                {err && (
+                    <div id="toast" onClick={() => setErr("")}>
+                        <Toaster>
+                            <Toast
+                                intent="primary"
+                                timeout={5000}
+                                message={err}
+                            />
+                        </Toaster>
+                    </div>
+                )}
+            </div>
             <div id="container">
-        <div id="left">
-                <div id="box">
-                    <div
-                        {...getRootProps({ className: "dropzone" })}
-                        onChange={handleChange}
-                    >
-                        <input {...getInputProps()} />
-                        {!file.length && (
-                            <div id="add">
-                                <h3>Drag or click to add files upto 500MB.</h3>
-                                <br />
-                                <Icon icon="add" iconSize={30} />
-                            </div>
-                        )}
+                <div id="left">
+                    <div id="box">
+                        <div
+                            {...getRootProps({ className: "dropzone" })}
+                            onChange={e => handleChange(e)}
+                        >
+                            <input {...getInputProps()} />
+                            {!file.length && (
+                                <div id="add">
+                                    <h3>
+                                        Drag or click to add files upto 250MB.
+                                    </h3>
+                                    <br />
+                                    <Icon icon="add" iconSize={30} />
+                                </div>
+                            )}
 
-                        {file.map(fl => {
-                            if (fl.lastModified) {
-                                return (
-                                    <div id="file-card">
-                                        <div
-                                            id="card-name"
-                                            class="bp3-card bp3-dark "
-                                        >
-                                            <span>
-                                                <Icon
-                                                    color="blue"
-                                                    id="doc"
-                                                    icon="document"
-                                                    iconSize={30}
-                                                />
-                                            </span>
-                                            <h4>
-                                                {fl.name}
+                            {file.map(fl => {
+                                if (fl.lastModified) {
+                                    return (
+                                        <div id="file-card">
+                                            <div
+                                                id="card-name"
+                                                class="bp3-card bp3-dark "
+                                            >
                                                 <span>
                                                     <Icon
-                                                        onClick={e => {
-                                                            e.stopPropagation();
-                                                            deleteFile(
-                                                                fl.lastModified
-                                                            );
-                                                        }}
-                                                        id="crs"
-                                                        icon="cross"
+                                                        color="blue"
+                                                        id="doc"
+                                                        icon="document"
                                                         iconSize={30}
                                                     />
                                                 </span>
-                                            </h4>
-                                            <h5>
-                                                {bytesToMegaBytes(fl.size)} MB
-                                            </h5>
+                                                <h4>
+                                                    {fl.name}
+                                                    <span>
+                                                        <Icon
+                                                            onClick={e =>
+                                                                deleteFile(
+                                                                    e,
+                                                                    fl.lastModified
+                                                                )
+                                                            }
+                                                            id="crs"
+                                                            icon="cross"
+                                                            iconSize={30}
+                                                        />
+                                                    </span>
+                                                </h4>
+                                                <h5>
+                                                    {bytesToMegaBytes(fl.size)}{" "}
+                                                    MB
+                                                </h5>
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            }
-                        })}
-                    </div>
-                    <h3 id="size"><code>{bytesToMegaBytes(sz)} MB</code></h3>
-                </div>
-                <form id="submitForm" onSubmit={handleSubmit}>
-                    <div class="bp3-progress-bar bp3-intent-primary">
-                          <div class="bp3-progress-meter" style={style}></div>
-                    </div>
-                          {uploadPercentage} %
-                    <br />
-
-                    <strong><label id="expires">Expires after {"  "}</label></strong>
-                    <div id="tools">
-        
-                        <Popover className="bp3-dark" content={expiryMenu} position={Position.BOTTOM}>
-                            <Button icon="time" text={exp > 30 ? (exp/60 + " Hour" + ((exp/60)==1 ? "" : "s")) : exp + " Minutes"} />
-                        </Popover>
-
-                        <label>
-                            {"  "} <strong>OR</strong> {"  "}
-                        </label>
-
-
-                        <Popover className="bp3-dark" content={downloadMenu} position={Position.BOTTOM}>
-                            <Button icon="download" text={dwn > 1 ? (dwn + " Downloads") : (dwn + " Download")} />
-                        </Popover>
-
-                        <br />
-                        <br />
-
-                        <Checkbox
-                            id="passCheck"
-                            label="Password Protect URL"
-                            onChange={() => clearPass()}
-                            onClick={Toggle}
-                        />
-                        <div id="pass">
-                            <InputGroup
-                                id="pass"
-                                fill={true}
-                                disabled={!pass}
-                                small={false}
-                                placeholder="Password"
-                                leftElement={lockButton}
-                                type={showPassword ? "text" : "password"}
-                                onChange={e => updPass(e.target.value)}
-                            />
+                                    );
+                                }
+                            })}
                         </div>
-                        <br />
-                        <br />
+                        <div id="moreFile">
+                            <h3 id="size">
+                                <code>{bytesToMegaBytes(sz)} MB</code>
+                            </h3>
+
+                            {file.length > 0 && (
+                                <>
+                                    <label
+                                        id="more"
+                                        className="bp3-file-input bp3-dark"
+                                    >
+                                        <input
+                                            multiple
+                                            type="file"
+                                            onChange={e => handleChange(e)}
+                                        />
+                                        <span class="bp3-file-upload-input">
+                                            Select more files.
+                                        </span>
+                                    </label>
+                                </>
+                            )}
+                        </div>
                     </div>
-        <div className="bp3-dark">
-                    <Button type="submit" icon="upload" text="Upload" />
+                    <form id="submitForm" onSubmit={handleSubmit}>
+                        {uploadPercentage > 0 && (
+                            <>
+                                <div class="bp3-progress-bar bp3-intent-primary">
+                                    <div
+                                        class="bp3-progress-meter"
+                                        style={style}
+                                    ></div>
+                                </div>
+                                {uploadPercentage} %
+                            </>
+                        )}
+                        <div id="tools">
+                            <div id="time">
+                                <strong>
+                                    <span id="expires">
+                                        Expires after {"  "}
+                                    </span>
+                                </strong>
+                                <Popover
+                                    className="bp3-dark"
+                                    content={expiryMenu}
+                                    position={Position.BOTTOM}
+                                >
+                                    <Button
+                                        icon="time"
+                                        text={
+                                            exp > 30
+                                                ? exp / 60 +
+                                                  " Hour" +
+                                                  (exp / 60 == 1 ? "" : "s")
+                                                : exp + " Minutes"
+                                        }
+                                    />
+                                </Popover>
+
+                                <label>
+                                    {"  "} <strong>OR</strong> {"  "}
+                                </label>
+
+                                <Popover
+                                    className="bp3-dark"
+                                    content={downloadMenu}
+                                    position={Position.BOTTOM}
+                                >
+                                    <Button
+                                        icon="download"
+                                        text={
+                                            dwn > 1
+                                                ? dwn + " Downloads"
+                                                : dwn + " Download"
+                                        }
+                                    />
+                                </Popover>
+                            </div>
+                            <br />
+                            <br />
+
+                            <Checkbox
+                                id="passCheck"
+                                label="Password Protect URL"
+                                onChange={() => clearPass()}
+                                onClick={Toggle}
+                            />
+                            <div id="pass" className="bp3-dark">
+                                <InputGroup
+                                    id="pass"
+                                    fill={true}
+                                    disabled={!pass}
+                                    small={false}
+                                    placeholder="Password"
+                                    leftElement={lockButton}
+                                    type={showPassword ? "text" : "password"}
+                                    onChange={e => updPass(e.target.value)}
+                                />
+                            </div>
+                            <br />
+                            <br />
+                        </div>
+                        <div className="bp3-dark">
+                            <Button type="submit" icon="upload" text="Upload" />
+                        </div>
+                    </form>
+                </div>
+                <div id="right">
+                {getLS().length > 0&& <Local data={getLS()} />}
+                {!getLS().length && (
+                    <Fragment>
+                    <div id="title">
+                        <h1><strong>File Sharing made private.</strong></h1>
+                    <img src="./back.png" alt="" />
+                    </div>
+                    <div id="info">
+                       <h2>Share files with a timeout link. The files you share are end-to-end encrypted which means that the original contents of the file can be seen only when you download them!</h2>
+                    </div>
+                    <br/>
+                    <div id="blog">
+                        <h2>To know more, check this <a href="#">blog</a> out.</h2>
+                    </div>
+                    </Fragment>
+                )}
+
+                </div>
         </div>
-                </form>
-            </div>
-        <div id="right">
-            <Local data={getLS()} />
-        </div>
-        </div>
-        </Fragment>
-    );
+    </Fragment>
+);
 };
 
 export default FileUpload;
