@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "client/build")));
 app.use(fileUpload());
 app.use(bodyparser.json());
-app.use("/file", require("./Controllers/File"));
+app.use("/file", require("./Controllers/file"));
 
 /*
 app.get("/*", (req, res) => {
