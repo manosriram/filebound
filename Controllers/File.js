@@ -14,7 +14,6 @@ const download = require("download");
 const { algorithm } = process.env;
 const zip = require("jszip");
 
-
 const {
     encryptFileName,
     getItem,
@@ -27,53 +26,17 @@ const {
     isEmpty,
     deleteS3Item
 } = require("./Utility");
+
+const {
+    getStream,
+    zipFile,
+    encryptBuffer,
+    decryptBuffer
+} = require("./FileUtility");
+
 const awsConfig = require("./configAWS");
 AWS.config.update(awsConfig);
 const docClient = new AWS.DynamoDB.DocumentClient();
-
-let dp = require("stream").Duplex;
-function bufferToStream(buffer) {
-    let stream = new dp();
-    stream.push(buffer);
-    stream.push(null);
-    return stream;
-}
-
-function getStream(stream) {
-    return new Promise(resolve => {
-        const chunks = [];
-
-        stream.on("data", chunk => chunks.push(chunk));
-        stream.on("end", () => resolve(Buffer.concat(chunks).toString()));
-    });
-}
-
-const zipFile = files => {
-    var zipp = new AdmZip();
-    if (files.length > 0) {
-        for (let t = 0; t < files.length; ++t) {
-            zipp.addFile(
-                files[t].name,
-                Buffer.alloc(files[t].size, files[t].data)
-            );
-        }
-    } else {
-        zipp.addFile(files.name, Buffer.alloc(files.size, files.data));
-    }
-    return zipp;
-};
-
-const decryptBuffer = (buffer, pass) => {
-    var decipher = crypto.createDecipher(algorithm, pass);
-    var dec = Buffer.concat([decipher.update(buffer), decipher.final()]);
-    return dec;
-};
-
-const encryptBuffer = (buffer, pass) => {
-    var cipher = crypto.createCipher(algorithm, pass);
-    var crypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
-    return crypted;
-};
 
 router.post("/upload", async (req, res) => {
     const { expires, downloads } = req.body;
@@ -104,28 +67,22 @@ router.post("/upload", async (req, res) => {
             limit += req.files.files[t].size;
     } else limit = req.files.files.size;
 
-    if (limit > 1073741824)
+    if (limit > 262144000)
         return res.json({ scs: false, msg: "1GB capacity exceeded." });
 
     const fileData = await putItem(genn, expires, password, req.files.files, downloads);
     try {
         putS3Item(genn, encryptedBuffer, false, function(err, data) {
-            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey, files: req.files.files, expires: fileData.expires });
+            if (!err) return res.json({ scs: true, url: genn + '|' + hashKey, files: req.files.files, expires: fileData.expires, downloads: downloads });
             else console.log(err);
         });
     } catch (er) {
         return res.json({ scs: false, msg: "Some error occured", error: er });
     }
-    /*
-    if (req.files.files.length > 0)
-        console.log(req.files.files[0]);
-    else
-        console.log(req.files.files);
-        */
 });
 
 router.post("/verifyLink", async (req, res) => {
-    const { url } = req.body; // no .zip
+    const { url } = req.body;
     try {
         getItem(url, resp => {
             if (!isEmpty(resp)) {
@@ -191,16 +148,5 @@ router.post("/decryptFile", async (req, res) => {
     } else
         res.json({ scs: false, msg: "Link Expired!" });
 });
+
 module.exports = router;
-
-/*
-        const encryptedData = await getS3Item(url + ".zip");
-        const decryptedData = await decryptBuffer(
-            encryptedData.buffer.Body,
-            "123"
-        );
-        var zipp = new zip();
-        zipp.file("download.zip", decryptedData);
-        return res.json({ scs: true, data: decryptedData});
-
-        */

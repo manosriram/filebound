@@ -4,6 +4,52 @@
     color: black;
 }
 
+#url {
+    width: 50%;
+    height:5vh;
+    outline: none;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+#copied {
+    color: black;
+}
+ 
+#err,
+#info,
+#downloaded {
+    color: black;
+    text-align: center;
+    margin: auto;
+    padding: 12px;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+}
+
+#downloaded {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#info {
+    margin-top: 20em;
+    font-size: 16px;
+}
+
 #spin,
 #spin:before,
 #spin:after {
@@ -106,8 +152,8 @@
 }
 
 #list {
-    background: #10161a;
-    color: white;
+    background: white;
+    color: black;
     width: 950px;
     height: 500px;
     text-align: center;

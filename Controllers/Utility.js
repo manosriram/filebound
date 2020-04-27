@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const TABLE = process.env.TABLE;
 const awsConfig = require("./configAWS");
 AWS.config.update(awsConfig);
+
 const docClient = new AWS.DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
@@ -127,7 +128,7 @@ const putItem = async (surl, expires, password, files, downloads) => {
             expires: exp,
             names: names,
             password: password == "" ? false : password,
-            downloads: downloads,
+            downloads: downloads
         }
     };
     try {

@@ -1,5 +1,6 @@
 import { FocusStyleManager } from "@blueprintjs/core";
 import {
+    Spinner,
     FileInput,
     Toaster,
     Toast,
@@ -26,19 +27,27 @@ import "./FileMain.css";
 import "./Media.css";
 var sz = 0;
 
-//blueprint-js/core includes
-function saveLS(data) {
+const Toggle = () => {
+    var temp = document.getElementById("pass");
+    if (temp.type === "password") {
+        temp.type = "text";
+    } else {
+        temp.type = "password";
+    }
+};
+
+const saveLS = data => {
     var a = [];
     a = JSON.parse(localStorage.getItem("session")) || [];
     a.push(data);
     localStorage.setItem("session", JSON.stringify(a));
-}
+};
 
-function getLS() {
+const getLS = () => {
     const data = JSON.parse(localStorage.getItem("session"));
     if (!data) return [];
     else return data;
-}
+};
 
 const bytesToMegaBytes = bytes => {
     return (bytes / (1024 * 1024)).toFixed(3);
@@ -129,7 +138,8 @@ const FileUpload = () => {
                                 files: fileMetaData,
                                 url: res2.data.url,
                                 totalSize: sz,
-                                expires: res2.data.expires
+                                expires: res2.data.expires,
+                                downloads: res2.data.downloads
                             };
                             saveLS(data);
                         } else {
@@ -143,7 +153,8 @@ const FileUpload = () => {
                                 files: fileMetaData,
                                 url: res2.data.url,
                                 totalSize: sz,
-                                expires: res2.data.expires
+                                expires: res2.data.expires,
+                                downloads: res2.data.downloads
                             };
                             saveLS(data);
                         }
@@ -171,18 +182,12 @@ const FileUpload = () => {
         setPass(!pass);
         updPass("");
     };
-    function Toggle() {
-        var temp = document.getElementById("pass");
-        if (temp.type === "password") {
-            temp.type = "text";
-        } else {
-            temp.type = "password";
-        }
-    }
+
     if (url) {
         path = `${window.location.href}download/${url}`;
         return <URL url={path} />;
     }
+
     const expiryMenu = (
         <Menu>
             <MenuItem text="5 Minutes" onClick={() => setExp(5)} />
@@ -290,9 +295,10 @@ const FileUpload = () => {
                                             type="file"
                                             onChange={e => handleChange(e)}
                                         />
-                                        <span class="bp3-file-upload-input">
-                                            Select more files.
-                                        </span>
+                                        <span
+                                            id="browse"
+                                            className="bp3-file-upload-input"
+                                        ></span>
                                     </label>
                                 </>
                             )}
@@ -301,21 +307,17 @@ const FileUpload = () => {
                     <form id="submitForm" onSubmit={handleSubmit}>
                         {uploadPercentage > 0 && (
                             <>
-                                <div class="bp3-progress-bar bp3-intent-primary">
-                                    <div
-                                        class="bp3-progress-meter"
-                                        style={style}
-                                    ></div>
-                                </div>
-                                {uploadPercentage} %
+                                {uploadPercentage}%
+                                <Spinner
+                                    intent="primary"
+                                    value={uploadPercentage / 100}
+                                />
                             </>
                         )}
                         <div id="tools">
-                                <strong>
-                                    <span id="expires">
-                                        Expires after {"  "}
-                                    </span>
-                                </strong>
+                            <strong>
+                                <span id="expires">Expires after {"  "}</span>
+                            </strong>
                             <div id="time">
                                 <Popover
                                     className="bp3-dark"
@@ -381,28 +383,10 @@ const FileUpload = () => {
                         </div>
                     </form>
                 </div>
-                <div id="right">
-                {getLS().length > 0&& <Local data={getLS()} />}
-                {!getLS().length && (
-                    <Fragment>
-                    <div id="title">
-                        <h1><strong>File Sharing made private.</strong></h1>
-                    <img src="./back.png" alt="" />
-                    </div>
-                    <div id="info">
-                       <h2>Share files with a timeout link. The files you share are end-to-end encrypted which means that the original contents of the file can be seen only when you download them!</h2>
-                    </div>
-                    <br/>
-                    <div id="blog">
-                        <h2>To know more, check this <a href="#">blog</a> out.</h2>
-                    </div>
-                    </Fragment>
-                )}
-
-                </div>
-        </div>
-    </Fragment>
-);
+                <Local data={getLS()} />
+            </div>
+        </Fragment>
+    );
 };
 
 export default FileUpload;

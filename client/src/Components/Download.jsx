@@ -53,7 +53,12 @@ const Download = props => {
     if (props.valid) return <List names={names} half={half} />
 
     if (pass) return <Verify url={half} />;
-    else if (err) return <h3 id="err">{err}</h3>
+    else if (err) return (
+        <>
+        <h4 id="info">This link is end-to-end encrypted and shared via reserve with a link that is time-bounded!💥</h4>
+        <h2 id="err">{err}<br/><a href="/">Try Uploading new files?</a></h2>
+        </>
+    )
     else return <List names={names} half={half} />;
 };
 

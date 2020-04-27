@@ -141,5 +141,13 @@
         background: white;
         color: black;
         margin-top: 100px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+    #list::-webkit-scrollbar {
+        display: none;
+    }
+    #tech-info {
+        display: none;
     }
 }

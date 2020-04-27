@@ -55,6 +55,7 @@ const Verify = props => {
                     onChange={e => handleChange(e)}
                 />
                 <br />
+
                 <input className="bp3-button" id="sub" type="submit" value="Verify" />
             </div>
             </form>

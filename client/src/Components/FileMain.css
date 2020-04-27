@@ -8,6 +8,11 @@ body, html {
     color: white;
 }
 
+#browse {
+    width: fit-content;
+    padding-left: 0;
+}
+
 .bp3-input {
     font-family: Fira Code;
     border: 1px solid #5C7080;
@@ -93,9 +98,9 @@ div .dropzone {
 }
 
 #submitForm {
-    width: 500px;
-    padding-top: 30px;
+    padding-top: 15px;
 }
+
 #moreFile #size {
     float: right;
 }
@@ -159,8 +164,6 @@ p {
     display:inline-block;	
 }
 #moreFile {
-    padding-top: 5px;
-    padding-bottom: 15px;
     margin: auto;
     text-align: center;
     float: left;
