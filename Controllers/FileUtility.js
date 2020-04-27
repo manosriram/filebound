@@ -34,15 +34,15 @@ const zipFile = files => {
 };
 
 const decryptBuffer = (buffer, pass) => {
-    var decipher = crypto.createDecipher(algorithm, pass);
-    var dec = Buffer.concat([decipher.update(buffer), decipher.final()]);
-    return dec;
+    const decipher = crypto.createDecipher(algorithm, pass);
+    const decrypted = Buffer.concat([decipher.update(buffer), decipher.final()]);
+    return decrypted;
 };
 
 const encryptBuffer = (buffer, pass) => {
-    var cipher = crypto.createCipher(algorithm, pass);
-    var crypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
-    return crypted;
+    const cipher = crypto.createCipher(algorithm, pass);
+    const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
+    return encrypted;
 };
 
 module.exports = {

@@ -8,8 +8,8 @@ const App = () => {
       <>
        <Router>
         <Switch>
-            <Route exact path="/"><Home /></Route>
-            <Route exact path="/download/:url"><Download /></Route>
+            <Route path="/download/:url"><Download /></Route>
+            <Route path="/"><Home /></Route>
         </Switch>
         </Router>
       </>
