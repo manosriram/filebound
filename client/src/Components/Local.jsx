@@ -59,7 +59,7 @@ const Local = props => {
                     <br />
                     <div id="blog">
                         <h2>
-                            To know more, check this <a href="#">blog</a> out.
+                            To know more, check this <a href="http://manosriram.xyz/show-posts">blog</a> out.
                         </h2>
                     </div>
                 </div>
