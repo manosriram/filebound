@@ -49,11 +49,11 @@ router.post("/upload", async (req, res) => {
             return res.json({ scs: false, msg: "Password too short" });
         password = req.body.password;
     }
+try {
+    var zippedFile = zipFile(req.files.files).toBuffer();
+    var hashKey = crypto.randomBytes(32).toString('hex');
 
-    const zippedFile = zipFile(req.files.files).toBuffer();
-    const hashKey = crypto.randomBytes(32).toString('hex');
-
-    let encryptedBuffer = encryptBuffer(zippedFile, hashKey);
+    var encryptedBuffer = encryptBuffer(zippedFile, hashKey);
     var genn = nanoid(32);
 
     if (password) {
@@ -69,6 +69,10 @@ router.post("/upload", async (req, res) => {
 
     if (limit > 262144000)
         return res.json({ scs: false, msg: "1GB capacity exceeded." });
+} catch (err) {
+    console.log('err:', err);
+    return res.json({scs: false, msg: 'Some error occured!'});
+}
 
     const fileData = await putItem(genn, expires, password, req.files.files, downloads);
     try {
@@ -77,6 +81,7 @@ router.post("/upload", async (req, res) => {
             else console.log(err);
         });
     } catch (er) {
+        console.log(er);
         return res.json({ scs: false, msg: "Some error occured", error: er });
     }
 });

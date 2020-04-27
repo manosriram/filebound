@@ -1,6 +1,6 @@
 #err,
 #list,
-#spin {
+#spin, #privacy {
     color: black;
 }
 
@@ -18,7 +18,7 @@
  
 #err,
 #info,
-#downloaded {
+#downloaded, #privacy {
     color: black;
     text-align: center;
     margin: auto;
@@ -37,7 +37,7 @@
     position: relative;
 }
 
-#downloaded {
+#downloaded, #privacy {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -154,8 +154,8 @@
 #list {
     background: white;
     color: black;
-    width: 950px;
-    height: 500px;
+    width: 650px;
+    height: auto;
     text-align: center;
     margin: auto;
     padding: 12px;

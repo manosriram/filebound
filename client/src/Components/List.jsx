@@ -81,6 +81,8 @@ const List = props => {
                 <a onClick={handleDownload}>
                     <Icon icon="download" iconSize={25} /> Download
                 </a>
+            <p id="err">or</p>
+                <a href="/">Try uploading some files?</a>
             </h2>
             </div>
             </>

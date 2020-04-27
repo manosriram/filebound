@@ -63,6 +63,8 @@ const Local = props => {
                         </h2>
                     </div>
                 </div>
+                <br />
+                <h3 id="links"><a href="https://github.com/manosriram/reserve">Github</a> </h3>
             </div>
         );
     }
