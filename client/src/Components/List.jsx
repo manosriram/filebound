@@ -1,6 +1,5 @@
 import {save} from 'save-file';
 import React, { Fragment, useState } from "react";
-import Download from "./Download";
 import { useLocation } from "react-router-dom";
 import "./App.css"
 import {Icon} from '@blueprintjs/core';
@@ -8,7 +7,6 @@ import Downloaded from './Downloaded';
 
 const List = props => {
     const [ld, isld] = useState(false);
-    const [dec, setDec] = useState("");
     const [fd, setFd] = useState({});
     const [downloaded, setDownloaded] = useState(false);
     let loc = useLocation();
@@ -22,7 +20,7 @@ const List = props => {
         for (let t=0;t<pastData.length;++t) {
             if (pastData[t].url === combined) {
                 pastData[t].downloads -= 1;
-                if (pastData[t].downloads == 5) {
+                if (pastData[t].downloads === 5) {
                     pastData.splice(t, 1);
                     break;
                 }

@@ -1,6 +1,5 @@
 import Verify from "./Verify";
-import React, { Fragment, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import List from "./List";
 import BASE from "./Config";

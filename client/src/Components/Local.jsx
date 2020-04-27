@@ -71,7 +71,7 @@ const Local = props => {
 
     return (
         <Fragment>
-            {props.data.map(lst => {
+            {props.data.map((lst, inx) => {
                 const now = new Date().getTime();
                 const expires = lst.expires;
                 const hours = moment.duration(expires - now).hours(),
@@ -79,7 +79,7 @@ const Local = props => {
                     seconds = moment.duration(expires - now).seconds();
                 if (lst.expires > now && lst.downloads > 0) {
                     return (
-                        <div id="uponRoot">
+                        <div key={inx} id="uponRoot">
                             <div id="upon">
                                 <div id="remaining">
                                     <p id="rem">

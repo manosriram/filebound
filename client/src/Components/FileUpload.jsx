@@ -1,10 +1,8 @@
 import { FocusStyleManager } from "@blueprintjs/core";
 import {
     Spinner,
-    FileInput,
     Toaster,
     Toast,
-    Divider,
     Popover,
     Position,
     Menu,
@@ -21,7 +19,6 @@ import React, { Fragment, useState } from "react";
 import axios from "axios";
 import URL from "./URL";
 import { useLocation } from "react-router-dom";
-import Progress from "./Progress";
 import Local from "./Local";
 import "./FileMain.css";
 import "./Media.css";
@@ -55,7 +52,7 @@ const bytesToMegaBytes = bytes => {
 
 const FileUpload = () => {
     FocusStyleManager.onlyShowFocusOnTabs();
-    const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+    const { getRootProps, getInputProps } = useDropzone();
     const [showPassword, setShowPassword] = useState(false);
     const [file, setFile] = useState([]);
     const [exp, setExp] = useState(5);
@@ -66,11 +63,6 @@ const FileUpload = () => {
     const [err, setErr] = useState("");
     const [ld, isld] = useState(false);
     const [uploadPercentage, setUploadPercentage] = useState(0);
-    let loc = useLocation();
-
-    const style = {
-        width: uploadPercentage + "%"
-    };
 
     const lockButton = (
         <Tooltip
@@ -108,7 +100,7 @@ const FileUpload = () => {
         fd.append("downloads", dwn);
 
         try {
-            const resp = axios
+            axios
                 .post("/file/upload", fd, {
                     headers: {
                         "Content-Type": "multipart/form-data"
@@ -169,13 +161,8 @@ const FileUpload = () => {
 
     const deleteFile = (e, inn) => {
         e.stopPropagation();
-        setFile(file.filter(ff => ff.lastModified != inn));
-        sz -= file.filter(ff => ff.lastModified == inn)[0].size;
-    };
-
-    const navStyle = {
-        margin: "0 auto",
-        width: "480px"
+        setFile(file.filter(ff => ff.lastModified !== inn));
+        sz -= file.filter(ff => ff.lastModified === inn)[0].size;
     };
 
     const clearPass = () => {
@@ -330,7 +317,7 @@ const FileUpload = () => {
                                             exp > 30
                                                 ? exp / 60 +
                                                   " Hour" +
-                                                  (exp / 60 == 1 ? "" : "s")
+                                                  (exp / 60 === 1 ? "" : "s")
                                                 : exp + " Minutes"
                                         }
                                     />

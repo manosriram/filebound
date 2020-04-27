@@ -2,15 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { nanoid } = require("nanoid");
 const AWS = require("aws-sdk");
-const AdmZip = require("adm-zip");
-const archiver = require("archiver");
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const crypto = require("crypto");
-const https = require("https");
-const request = require("request");
-archiver.registerFormat("zip-encrypted", require("archiver-zip-encrypted"));
-const download = require("download");
 const { algorithm } = process.env;
 const zip = require("jszip");
 
@@ -68,7 +62,7 @@ try {
     } else limit = req.files.files.size;
 
     if (limit > 262144000)
-        return res.json({ scs: false, msg: "1GB capacity exceeded." });
+        return res.json({ scs: false, msg: "250MB capacity exceeded." });
 } catch (err) {
     console.log('err:', err);
     return res.json({scs: false, msg: 'Some error occured!'});

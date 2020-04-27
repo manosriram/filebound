@@ -1,10 +1,6 @@
-import React, { Fragment, useState } from "react";
-import axios from "axios";
+import React from "react";
 import "./App.css";
 import {
-    Classes,
-    Intent,
-    Button,
     Icon,
     Position,
     Popover,
@@ -28,6 +24,7 @@ const URL = props => {
                     />
                 </Tooltip>
             </Popover>
+        <h2 id="err"><a href="/">Try uploading some more files?</a></h2>
         </div>
     );
 };
