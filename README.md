@@ -26,3 +26,7 @@ When downloading, your encrypted zip-file is downloaded and decrypted with the h
 - @blueprintjs/icons
 - react-router-dom
 - aws-sdk
+
+### Installation
+npm install
+npm run dev (Opens browser tab at port 3000)
