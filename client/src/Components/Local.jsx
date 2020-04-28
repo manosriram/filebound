@@ -90,7 +90,7 @@ const Local = props => {
                     </div>
                 </div>
                 <br />
-                <h3 id="links">
+                <h3 id="link">
                     <a href="https://github.com/manosriram/reserve">Github</a>{" "}
                 </h3>
             </div>
