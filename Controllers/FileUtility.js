@@ -1,6 +1,6 @@
 const AdmZip = require("adm-zip");
 const crypto = require("crypto");
-const { algorithm } = process.env;
+const { ALGORITHM } = process.env;
 let dp = require("stream").Duplex;
 const bufferToStream = buffer => {
     let stream = new dp();
@@ -34,13 +34,13 @@ const zipFile = files => {
 };
 
 const decryptBuffer = (buffer, pass) => {
-    const decipher = crypto.createDecipher(algorithm, pass);
+    const decipher = crypto.createDecipher(ALGORITHM, pass);
     const decrypted = Buffer.concat([decipher.update(buffer), decipher.final()]);
     return decrypted;
 };
 
 const encryptBuffer = (buffer, pass) => {
-    const cipher = crypto.createCipher(algorithm, pass);
+    const cipher = crypto.createCipher(ALGORITHM, pass);
     const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
     return encrypted;
 };

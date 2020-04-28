@@ -25,11 +25,12 @@ const Local = props => {
     const [time, setTime] = useState([]);
 
     React.useEffect(() => {
-        var updatedData = [];
+        let updatedData = [];
         const data = JSON.parse(localStorage.getItem("session"));
         updatedData = data.filter(
             file => file.expires > new Date().getTime() && file.downloads > 0
         );
+        console.log(updatedData);
         localStorage.setItem("session", JSON.stringify(updatedData));
     }, []);
 
@@ -59,12 +60,16 @@ const Local = props => {
                     <br />
                     <div id="blog">
                         <h2>
-                            To know more, check this <a href="http://manosriram.xyz/show-posts">blog</a> out.
+                            To know more, check this{" "}
+                            <a href="http://manosriram.xyz/show-posts">blog</a>{" "}
+                            out.
                         </h2>
                     </div>
                 </div>
                 <br />
-                <h3 id="links"><a href="https://github.com/manosriram/reserve">Github</a> </h3>
+                <h3 id="links">
+                    <a href="https://github.com/manosriram/reserve">Github</a>{" "}
+                </h3>
             </div>
         );
     }

@@ -17,21 +17,6 @@ const Download = props => {
     const [hash, setHash] = useState("");
     let loc = useLocation();
 
-    React.useEffect(() => {
-        isld(true);
-        setHash(loc.pathname.split("|")[1]);
-        const url = loc.pathname.split("|")[0].split("/")[2];
-        surl(BASE + url + '.zip');
-
-        listFiles(url);
-        setHalf(url);
-        isld(false);
-    }, []);
-
-    const handleChange = e => {
-        setFilePass(e.target.value);
-    };
-
     const listFiles = async url => {
         const resp = await fetch("/file/verifyLink", {
             method: "POST",
@@ -46,6 +31,21 @@ const Download = props => {
             setPass(data.data.password);
             setTotal(data.data);
         } else setErr(data.msg);
+    };
+
+    React.useEffect(() => {
+        isld(true);
+        setHash(loc.pathname.split("|")[1]);
+        const url = loc.pathname.split("|")[0].split("/")[2];
+        surl(BASE + url + '.zip');
+
+        listFiles(url);
+        setHalf(url);
+        isld(false);
+    }, []);
+
+    const handleChange = e => {
+        setFilePass(e.target.value);
     };
 
     if (ld) return <div id="spin"></div>

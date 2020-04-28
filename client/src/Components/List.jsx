@@ -1,9 +1,9 @@
-import {save} from 'save-file';
+import { save } from "save-file";
 import React, { Fragment, useState } from "react";
 import { useLocation } from "react-router-dom";
-import "./App.css"
-import {Icon} from '@blueprintjs/core';
-import Downloaded from './Downloaded';
+import "./App.css";
+import { Icon } from "@blueprintjs/core";
+import Downloaded from "./Downloaded";
 
 const List = props => {
     const [ld, isld] = useState(false);
@@ -14,13 +14,13 @@ const List = props => {
     const url = loc.pathname.split("|")[0].split("/")[2];
 
     const getLS = () => {
-        const combined = (url + '|' + hash);
+        const combined = url + "|" + hash;
         let pastData = JSON.parse(localStorage.getItem("session"));
 
-        for (let t=0;t<pastData.length;++t) {
-            if (pastData[t].url === combined) {
+        for (let t = 0; t < pastData.length; ++t) {
+            if (pastData[t].url == combined) {
                 pastData[t].downloads -= 1;
-                if (pastData[t].downloads === 5) {
+                if (pastData[t].downloads == 5) {
                     pastData.splice(t, 1);
                     break;
                 }
@@ -57,32 +57,32 @@ const List = props => {
             body: JSON.stringify({ url: props.half })
         });
         setDownloaded(true);
-        await save(fd, 'Archive.zip');
+        await save(fd, "Archive.zip");
     };
 
-    if (downloaded) return <Downloaded />
-    if (ld) return <div id="spin"></div>
+    if (downloaded) return <Downloaded />;
+    if (ld) return <div id="spin"></div>;
     else {
         return (
             <>
-            <div id="list">
-                {props.names.map(name => {
-                    return (
-                        <Fragment>
-                            <h2 onClick={getLS}>{name}</h2>
-                        </Fragment>
-                    );
-                })}
-            </div>
-            <div id="download">
-            <h2>
-                <a onClick={handleDownload}>
-                    <Icon icon="download" iconSize={25} /> Download
-                </a>
-            <p id="err">or</p>
-                <a href="/">Try uploading some files?</a>
-            </h2>
-            </div>
+                <div id="list">
+                    {props.names.map(name => {
+                        return (
+                            <Fragment>
+                                <h2 onClick={getLS}>{name}</h2>
+                            </Fragment>
+                        );
+                    })}
+                </div>
+                <div id="download">
+                    <h2>
+                        <a onClick={handleDownload}>
+                            <Icon icon="download" iconSize={25} /> Download
+                        </a>
+                        <p id="err">or</p>
+                        <a href="/">Try uploading some files?</a>
+                    </h2>
+                </div>
             </>
         );
     }

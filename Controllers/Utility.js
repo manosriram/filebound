@@ -1,10 +1,14 @@
 const AWS = require("aws-sdk");
 const TABLE = process.env.TABLE;
-const awsConfig = require("./configAWS");
+let awsConfig = {
+    region: process.env.REGION,
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY
+};
 AWS.config.update(awsConfig);
 
-const docClient = new AWS.DynamoDB.DocumentClient();
-const s3 = new AWS.S3();
+const docClient = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+const s3 = new AWS.S3({ apiVersion: "2012-08-10" });
 
 const isEmpty = obj => {
     return JSON.stringify(obj) == "{}";
@@ -45,7 +49,7 @@ const getItem = async (surl, cb) => {
         }
     };
     docClient.get(params, (err, data) => {
-        if (!err) cb(data);
+        cb(data);
     });
 };
 
@@ -116,7 +120,7 @@ const putItem = async (surl, expires, password, files, downloads) => {
             }
         } else names.push(files.name);
     } catch (er) {
-        return { scs: false, msg: "Some error occured", error: er };
+        return { scs: false, msg: "Unable to upload data", error: er };
     }
 
     const params = {
@@ -132,10 +136,10 @@ const putItem = async (surl, expires, password, files, downloads) => {
         }
     };
     try {
-        const data = await docClient.put(params).promise();
-        return { scs: true, surl: surl, expires: exp };
+    const data = await docClient.put(params).promise();
+    return { scs: true, surl: surl, expires: exp };
     } catch (err) {
-        return { scs: false, err: err };
+        return { scs: false, msg: "Unable to upload data." };
     }
 };
 
