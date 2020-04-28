@@ -23,6 +23,19 @@ const bytesToMegaBytes = bytes => {
 const Local = props => {
     FocusStyleManager.onlyShowFocusOnTabs();
     const [time, setTime] = useState([]);
+    const [isEmpty, setEmpty] = useState(undefined);
+
+    window.addEventListener(
+        "storage",
+        function() {
+            const nowData = JSON.parse(localStorage.getItem("session"));
+            console.log(nowData);
+            if (nowData.length != 0)
+                setEmpty(false);
+            else setEmpty(true);
+        },
+        false
+    );
 
     React.useEffect(() => {
         let updatedData = [];
@@ -30,17 +43,18 @@ const Local = props => {
         updatedData = data.filter(
             file => file.expires > new Date().getTime() && file.downloads > 0
         );
-        console.log(updatedData);
         localStorage.setItem("session", JSON.stringify(updatedData));
     }, []);
 
     React.useEffect(() => {
         setTimeout(() => {
+            if (JSON.parse(localStorage.getItem("session")).length == 0) setEmpty(true);
+            else setEmpty(false);
             setTime([]);
         }, 1000);
     });
 
-    if (!props.data.length) {
+    if (!props.data.length || isEmpty) {
         return (
             <div id="right">
                 <div id="tech-info">
@@ -72,121 +86,136 @@ const Local = props => {
                 </h3>
             </div>
         );
-    }
-
-    return (
-        <Fragment>
-            {props.data.map((lst, inx) => {
-                const now = new Date().getTime();
-                const expires = lst.expires;
-                const hours = moment.duration(expires - now).hours(),
-                    minutes = moment.duration(expires - now).minutes(),
-                    seconds = moment.duration(expires - now).seconds();
-                if (lst.expires > now && lst.downloads > 0) {
-                    return (
-                        <div key={inx} id="uponRoot">
-                            <div id="upon">
-                                <div id="remaining">
-                                    <p id="rem">
-                                        Expires in {"  "}
-                                        <strong>
-                                            {hours < 10 ? "0" + hours : hours}:
-                                            {minutes < 10
-                                                ? "0" + minutes
-                                                : minutes}
-                                            :
-                                            {seconds < 10
-                                                ? "0" + seconds
-                                                : seconds}
-                                        </strong>
-                                        {"  "} or after{" "}
-                                        <strong>
-                                            {lst.downloads} download{" "}
-                                            {lst.downloads > 1 ? "s" : ""}
-                                        </strong>
-                                    </p>
-                                </div>
-                                {lst.files.length && (
-                                    <>
-                                        <div id="mm" class="bp3-dark bp3-card ">
-                                            <h5
-                                                id="archive"
-                                                class="bp3-heading"
+    } else {
+        return (
+            <Fragment>
+                {props.data.map((lst, inx) => {
+                    const now = new Date().getTime();
+                    const expires = lst.expires;
+                    const hours = moment.duration(expires - now).hours(),
+                        minutes = moment.duration(expires - now).minutes(),
+                        seconds = moment.duration(expires - now).seconds();
+                    if (lst.expires > now && lst.downloads > 0) {
+                        return (
+                            <div key={inx} id="uponRoot">
+                                <div id="upon">
+                                    <div id="remaining">
+                                        <p id="rem">
+                                            Expires in {"  "}
+                                            <strong>
+                                                {hours < 10
+                                                    ? "0" + hours
+                                                    : hours}
+                                                :
+                                                {minutes < 10
+                                                    ? "0" + minutes
+                                                    : minutes}
+                                                :
+                                                {seconds < 10
+                                                    ? "0" + seconds
+                                                    : seconds}
+                                            </strong>
+                                            {"  "} or after{" "}
+                                            <strong>
+                                                {lst.downloads} download{" "}
+                                                {lst.downloads > 1 ? "s" : ""}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                    {lst.files.length && (
+                                        <>
+                                            <div
+                                                id="mm"
+                                                class="bp3-dark bp3-card "
                                             >
-                                                <Icon icon="document" />
-                                                {"  "}
-                                                Archive.zip{" "}
-                                                <p id="size">
-                                                    {bytesToMegaBytes(
-                                                        lst.totalSize
-                                                    )}{" "}
-                                                    MB
-                                                </p>
-                                            </h5>
-                                            <Popover
-                                                content={lst.files.map(ln => (
-                                                    <>
-                                                        <Menu text={ln.name}>
-                                                            {ln.name}
-                                                        </Menu>
-                                                        <Divider />
-                                                    </>
-                                                ))}
-                                                position={Position.BOTTOM}
-                                            >
-                                                <Button
-                                                    id="filelist"
-                                                    icon="chevron-down"
-                                                    text={
-                                                        lst.files.length +
-                                                        " file" +
-                                                        (lst.files.length > 1
-                                                            ? "s"
-                                                            : "")
-                                                    }
-                                                />
-                                            </Popover>
-                                            <a
-                                                id="down"
-                                                href={"download/" + lst.url}
-                                            >
-                                                <Icon
-                                                    icon="cloud-download"
-                                                    iconSize={30}
-                                                />
-                                            </a>
-                                            <Popover
-                                                id="down"
-                                                content="Copied!"
-                                                position={Position.RIGHT}
-                                            >
-                                                <Tooltip
-                                                    position={Position.RIGHT}
+                                                <h5
+                                                    id="archive"
+                                                    class="bp3-heading"
+                                                >
+                                                    <Icon icon="document" />
+                                                    {"  "}
+                                                    Archive.zip{" "}
+                                                    <p id="size">
+                                                        {bytesToMegaBytes(
+                                                            lst.totalSize
+                                                        )}{" "}
+                                                        MB
+                                                    </p>
+                                                </h5>
+                                                <Popover
+                                                    content={lst.files.map(
+                                                        ln => (
+                                                            <>
+                                                                <Menu
+                                                                    text={
+                                                                        ln.name
+                                                                    }
+                                                                >
+                                                                    {ln.name}
+                                                                </Menu>
+                                                                <Divider />
+                                                            </>
+                                                        )
+                                                    )}
+                                                    position={Position.BOTTOM}
+                                                >
+                                                    <Button
+                                                        id="filelist"
+                                                        icon="chevron-down"
+                                                        text={
+                                                            lst.files.length +
+                                                            " file" +
+                                                            (lst.files.length >
+                                                            1
+                                                                ? "s"
+                                                                : "")
+                                                        }
+                                                    />
+                                                </Popover>
+                                                <a
+                                                    id="down"
+                                                    href={"download/" + lst.url}
                                                 >
                                                     <Icon
-                                                        data-clipboard-text={
-                                                            window.location
-                                                                .href +
-                                                            "download/" +
-                                                            lst.url
-                                                        }
-                                                        id="copy"
-                                                        icon="duplicate"
-                                                        iconSize={25}
+                                                        icon="cloud-download"
+                                                        iconSize={30}
                                                     />
-                                                </Tooltip>
-                                            </Popover>
-                                        </div>
-                                    </>
-                                )}
-                                <br />
+                                                </a>
+                                                <Popover
+                                                    id="down"
+                                                    content="Copied!"
+                                                    position={Position.RIGHT}
+                                                >
+                                                    <Tooltip
+                                                        position={
+                                                            Position.RIGHT
+                                                        }
+                                                    >
+                                                        <Icon
+                                                            data-clipboard-text={
+                                                                window.location
+                                                                    .href +
+                                                                "download/" +
+                                                                lst.url
+                                                            }
+                                                            id="copy"
+                                                            icon="duplicate"
+                                                            iconSize={25}
+                                                        />
+                                                    </Tooltip>
+                                                </Popover>
+                                            </div>
+                                        </>
+                                    )}
+                                    <br />
+                                </div>
                             </div>
-                        </div>
-                    );
-                }
-            })}
-        </Fragment>
-    );
+                        );
+                    }
+                })}
+            </Fragment>
+        );
+    }
 };
 
 export default Local;

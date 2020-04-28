@@ -15,11 +15,13 @@ app.use(fileUpload());
 app.use(bodyparser.json());
 app.use("/file", require("./Controllers/File"));
 
+/*
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "client/build/index.html"), err => {
         res.status(500).send(err);
     });
 });
+*/
 
 app.listen(PORT, () => console.log(`Server at ${PORT}`));
 

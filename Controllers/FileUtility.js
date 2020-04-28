@@ -7,7 +7,7 @@ const bufferToStream = buffer => {
     stream.push(buffer);
     stream.push(null);
     return stream;
-}
+};
 
 const getStream = stream => {
     return new Promise(resolve => {
@@ -16,7 +16,7 @@ const getStream = stream => {
         stream.on("data", chunk => chunks.push(chunk));
         stream.on("end", () => resolve(Buffer.concat(chunks).toString()));
     });
-}
+};
 
 const zipFile = files => {
     var zipp = new AdmZip();
@@ -34,15 +34,29 @@ const zipFile = files => {
 };
 
 const decryptBuffer = (buffer, pass) => {
-    const decipher = crypto.createDecipher(ALGORITHM, pass);
-    const decrypted = Buffer.concat([decipher.update(buffer), decipher.final()]);
-    return decrypted;
+    try {
+        const decipher = crypto.createDecipher(ALGORITHM, pass);
+        const decrypted = Buffer.concat([
+            decipher.update(buffer),
+            decipher.final()
+        ]);
+        return decrypted;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const encryptBuffer = (buffer, pass) => {
-    const cipher = crypto.createCipher(ALGORITHM, pass);
-    const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
-    return encrypted;
+    try {
+        const cipher = crypto.createCipher(ALGORITHM, pass);
+        const encrypted = Buffer.concat([
+            cipher.update(buffer),
+            cipher.final()
+        ]);
+        return encrypted;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 module.exports = {
