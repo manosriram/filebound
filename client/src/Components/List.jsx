@@ -6,7 +6,7 @@ import { Icon } from "@blueprintjs/core";
 import Downloaded from "./Downloaded";
 
 const List = props => {
-    const [ld, isld] = useState(false);
+    const [ld, isld] = useState(true);
     const [fd, setFd] = useState({});
     const [downloaded, setDownloaded] = useState(false);
     let loc = useLocation();
@@ -43,7 +43,6 @@ const List = props => {
     };
 
     React.useEffect(() => {
-        isld(true);
         getDecryptURL();
     }, []);
 

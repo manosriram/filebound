@@ -28,27 +28,36 @@ const Local = props => {
     window.addEventListener(
         "storage",
         function() {
-            const nowData = JSON.parse(localStorage.getItem("session"));
-            console.log(nowData);
-            if (nowData.length != 0)
-                setEmpty(false);
-            else setEmpty(true);
+            try {
+                const nowData = JSON.parse(localStorage.getItem("session"));
+                console.log(nowData);
+                if (nowData.length != 0) setEmpty(false);
+                else setEmpty(true);
+            } catch (err) {
+                console.log(err);
+            }
         },
         false
     );
 
     React.useEffect(() => {
-        let updatedData = [];
-        const data = JSON.parse(localStorage.getItem("session"));
-        updatedData = data.filter(
-            file => file.expires > new Date().getTime() && file.downloads > 0
-        );
-        localStorage.setItem("session", JSON.stringify(updatedData));
+        try {
+            let updatedData = [];
+            const data = JSON.parse(localStorage.getItem("session"));
+            updatedData = data.filter(
+                file =>
+                    file.expires > new Date().getTime() && file.downloads > 0
+            );
+            localStorage.setItem("session", JSON.stringify(updatedData));
+        } catch (err) {
+            console.log(err);
+        }
     }, []);
 
     React.useEffect(() => {
         setTimeout(() => {
-            if (JSON.parse(localStorage.getItem("session")).length == 0) setEmpty(true);
+            if (JSON.parse(localStorage.getItem("session")).length == 0)
+                setEmpty(true);
             else setEmpty(false);
             setTime([]);
         }, 1000);
