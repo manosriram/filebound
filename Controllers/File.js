@@ -49,6 +49,7 @@ router.post("/upload", async (req, res) => {
         var hashKey = crypto.randomBytes(32).toString("hex");
 
         var encryptedBuffer = encryptBuffer(zippedFile, hashKey);
+        console.log(encryptedBuffer);
         var genn = nanoid(32);
 
         if (password) {
@@ -62,8 +63,8 @@ router.post("/upload", async (req, res) => {
                 limit += req.files.files[t].size;
         } else limit = req.files.files.size;
 
-        if (limit > 262144000)
-            return res.json({ scs: false, msg: "250MB capacity exceeded." });
+        if (limit > 100000000)
+            return res.json({ scs: false, msg: "150MB capacity exceeded." });
     } catch (err) {
         return res.json({ scs: false, msg: "Some error occured!" });
     }
@@ -82,9 +83,8 @@ router.post("/upload", async (req, res) => {
             Body: encryptedBuffer,
             Key: `${genn}.zip`
         };
-        var options = { partSize: 10 * 1024 * 1024, queueSize: 1 };
 
-        const awsResp = await s3.upload(params, options).promise();
+        const awsResp = await s3.upload(params).promise();
         if (!isEmpty(awsResp)) {
             return res.json({
                 scs: true,
@@ -154,6 +154,7 @@ router.post("/download", async (req, res) => {
 
 router.post("/decryptFile", async (req, res) => {
     let { url, hash } = req.body;
+    console.log(req.body);
 
     let encryptedData = await getS3Item(url + ".zip");
     if (encryptedData.scs) {
