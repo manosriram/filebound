@@ -110,8 +110,7 @@ const FileUpload = () => {
                             Math.round(progressEvent.loaded * 100) /
                                 progressEvent.total
                         );
-                        if (prog <= 95) setUploadPercentage(prog);
-                        else setUploadPercentage(99);
+                        setUploadPercentage(prog);
                     }
                 })
                 .then(res2 => {

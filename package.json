@@ -4,7 +4,7 @@
   "description": "Web App to store and retrieve files using a time-bounded, shortened URL ⏳",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --max-old-space-size=3072 server.js"
   },
   "repository": {
     "type": "git",

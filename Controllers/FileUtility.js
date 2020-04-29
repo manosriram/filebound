@@ -36,7 +36,6 @@ const zipFile = files => {
 const decryptBuffer = (buffer, pass) => {
     try {
         const decipher = crypto.createDecipher(ALGORITHM, pass);
-        decipher.setAutoPadding(false);
         const decrypted = Buffer.concat([
             decipher.update(buffer),
             decipher.final()

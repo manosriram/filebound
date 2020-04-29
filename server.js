@@ -15,6 +15,12 @@ app.use(fileUpload());
 app.use(bodyparser.json());
 app.use("/file", require("./Controllers/File"));
 
+const v8 = require('v8');
+const totalh = v8.getHeapStatistics().total_available_size;
+const totalh_gb = (totalh / 1024 / 1024 / 1024).toFixed(2);
+console.log('totalHeapSizeGB: ', totalh_gb);
+
+
 /*
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "client/build/index.html"), err => {

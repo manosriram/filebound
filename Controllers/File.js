@@ -148,7 +148,7 @@ router.post("/download", async (req, res) => {
 router.post("/decryptFile", async (req, res) => {
     let { url, hash } = req.body;
 
-    const encryptedData = await getS3Item(url + ".zip");
+    let encryptedData = await getS3Item(url + ".zip");
     if (encryptedData.scs) {
         const decryptedData = await decryptBuffer(
             encryptedData.buffer.Body,
