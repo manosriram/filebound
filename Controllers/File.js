@@ -30,6 +30,7 @@ const {
 
 const awsConfig = require("./configAWS");
 AWS.config.update(awsConfig);
+const s3 = new AWS.S3({ apiVersion: "2012-08-10" });
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 router.post("/upload", async (req, res) => {
@@ -75,17 +76,23 @@ router.post("/upload", async (req, res) => {
         downloads
     );
     try {
-        putS3Item(genn, encryptedBuffer, false, function(err, data) {
-            if (!err)
-                return res.json({
-                    scs: true,
-                    url: genn + "|" + hashKey,
-                    files: req.files.files,
-                    expires: fileData.expires,
-                    downloads: downloads
-                });
-            else console.log(err);
-        });
+        const params = {
+            Bucket: process.env.BUCKET,
+            ACL: process.env.ACL,
+            Body: encryptedBuffer,
+            Key: `${genn}.zip`
+        };
+        var options = { partSize: 10 * 1024 * 1024, queueSize: 1 };
+
+        const awsResp = await s3.upload(params, options).promise();
+        if (!isEmpty(awsResp)) {
+            return res.json({
+                scs: true,
+                url: genn + "|" + hashKey,
+                expires: fileData.expires,
+                downloads: downloads
+            });
+        } else return res.json({ scs: false, msg: "Some error occured" });
     } catch (err) {
         console.log(err);
         return res.json({ scs: false, msg: "Some error occured", error: er });

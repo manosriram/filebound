@@ -36,7 +36,8 @@ const putS3Item = (genn, data, dec, cb) => {
         Key: dec == true ? `${genn}` : `${genn}.zip`
     };
 
-    s3.putObject(params, async (err, data) => {
+    s3.upload(params, async (err, data) => {
+        console.log(data);
         return cb(err, data);
     });
 };
