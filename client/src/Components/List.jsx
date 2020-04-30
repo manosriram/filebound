@@ -40,9 +40,7 @@ const List = props => {
             },
             body: JSON.stringify({ url: url, hash: hash })
         }).then(resp => {
-            console.log(resp);
             const reader = resp.body.getReader();
-
             const stream = new ReadableStream({
                 start(controller) {
                     // The following function handles each data chunk
@@ -75,7 +73,7 @@ const List = props => {
     }, []);
 
     const handleDownload = async () => {
-        saveAs(new Blob([fd]), 'Archive.zip');
+        saveAs(new Blob([fd], { type: 'application/octet-stream' }), 'Archive.zip');
         return;
         getLS();
         const resp = await fetch("/file/download", {
