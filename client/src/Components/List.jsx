@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import "./App.css";
 import { Spinner, Icon } from "@blueprintjs/core";
 import Downloaded from "./Downloaded";
-import Progress from './Progress';
+import Progress from "./Progress";
 
 const List = props => {
     const [ld, isld] = useState(true);
@@ -36,25 +36,24 @@ const List = props => {
         const fd = new FormData();
         fd.append("url", url);
         fd.append("hash", hash);
-        axios.post("/file/decryptFile", fd, {
-        headers: {
-            "Content-Type": "multipart/form-data"
-        },
-        onUploadProgress: progressEvent => {
-            let prog = parseInt(
-                Math.round(progressEvent.loaded * 100) /
-                progressEvent.total
-            );
-            console.log(prog);
-            setDownloadPercentage(prog);
-        },
-    }).then(data => {
-        console.log(data);
-        if (!data.scs)
-        setFd(data.data);
-        isld(false);
-    })
-    .catch(err => console.log(err));
+        axios
+            .post("/file/decryptFile", fd, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                },
+                onUploadProgress: progressEvent => {
+                    let prog = parseInt(
+                        Math.round(progressEvent.loaded * 100) /
+                            progressEvent.total
+                    );
+                    setDownloadPercentage(prog);
+                }
+            })
+            .then(data => {
+                setFd(data.data.data);
+                isld(false);
+            })
+            .catch(err => console.log(err));
     };
 
     React.useEffect(() => {
@@ -75,7 +74,14 @@ const List = props => {
     };
 
     if (downloaded) return <Downloaded />;
-    if (ld) return <Spinner id="downloaded" intent="primary" value={downloadPercentage} />
+    if (ld)
+        return (
+            <Spinner
+                id="downloaded"
+                intent="primary"
+                value={downloadPercentage}
+            />
+        );
     else {
         return (
             <>
@@ -83,7 +89,7 @@ const List = props => {
                     {props.names.map(name => {
                         return (
                             <Fragment>
-                                <h2 onClick={getLS}>{name}</h2>
+                                <h2>{name}</h2>
                             </Fragment>
                         );
                     })}

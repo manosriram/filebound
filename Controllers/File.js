@@ -153,19 +153,15 @@ router.post("/download", async (req, res) => {
 });
 
 router.post("/decryptFile", async (req, res) => {
-    let { url, hash } = req.body;
-    console.log(req.body);
+    try {
+        let { url, hash } = req.body;
+        let encryptedData = await getObject(url + ".zip");
+        const decryptedData = await decryptBuffer(encryptedData, hash);
 
-    let encryptedData = await getS3Item(url + ".zip");
-    if (encryptedData.scs) {
-        const decryptedData = await decryptBuffer(
-            encryptedData.buffer.Body,
-            hash
-        );
-        var zipp = new zip();
-        zipp.file("Archive.zip", decryptedData);
         return res.json({ scs: true, data: decryptedData });
-    } else res.json({ scs: false, msg: "Link Expired!" });
+    } catch (err) {
+        return res.json({ scs: false, msg: "Some error occured!", error: er });
+    }
 });
 
 module.exports = router;

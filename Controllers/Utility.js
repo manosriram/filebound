@@ -19,7 +19,6 @@ const getS3Item = async url => {
         Bucket: process.env.BUCKET,
         Key: url
     };
-
     try {
         const buffer = await s3.getObject(params).promise();
         return { buffer: buffer, scs: true };
@@ -145,7 +144,6 @@ const putItem = async (surl, expires, password, files, downloads) => {
 };
 
 const getObject = async url => {
-    url = url + ".zip";
     const s3 = new AWS.S3();
     try {
         const params = {
