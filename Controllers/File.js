@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const crypto = require("crypto");
 const { ALGORITHM } = process.env;
-const zip = require("jszip");
+const AdmZip = require("adm-zip");
 
 const {
     encryptFileName,
@@ -153,15 +153,29 @@ router.post("/download", async (req, res) => {
 });
 
 router.post("/decryptFile", async (req, res) => {
-    try {
-        let { url, hash } = req.body;
-        let encryptedData = await getObject(url + ".zip");
-        const decryptedData = await decryptBuffer(encryptedData, hash);
-
-        return res.json({ scs: true, data: decryptedData });
-    } catch (err) {
-        return res.json({ scs: false, msg: "Some error occured!", error: er });
-    }
+    let { url, hash } = req.body;
+    url += '.zip';
+    var zipp = new AdmZip();
+    const params = {
+        Bucket: process.env.BUCKET,
+        Key: url
+    };
+    var bufferArray = [], total = 0;
+    s3.getObject(params).createReadStream().
+        on('error', err => {
+            return res.json({ scs: false, msg: "Some error occured!", error: err });
+        }).
+        on('data', data => {
+            bufferArray.push(data);
+            total += data.length;
+        }).
+        on('end', async end => {
+            console.log("Done!");
+            console.log(bufferArray);
+            const sendBuffer = Buffer.concat(bufferArray, total);
+            const decryptedData = await decryptBuffer(sendBuffer, hash);
+            return res.json({scs: true, data: decryptedData });
+        });
 });
 
 module.exports = router;

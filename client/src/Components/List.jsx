@@ -41,7 +41,7 @@ const List = props => {
             body: JSON.stringify({ url: url, hash: hash })
         });
         const dt = await resp.json();
-        setFd(dt.data.data);
+        setFd(dt.data);
         isld(false);
     };
 
