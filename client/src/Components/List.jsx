@@ -1,11 +1,11 @@
 import axios from "axios";
-import { save } from "save-file";
 import React, { Fragment, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "./App.css";
 import { Spinner, Icon } from "@blueprintjs/core";
 import Downloaded from "./Downloaded";
 import Progress from "./Progress";
+import { saveAs } from 'file-saver';
 
 const List = props => {
     const [ld, isld] = useState(true);
@@ -74,6 +74,8 @@ const List = props => {
     }, []);
 
     const handleDownload = async () => {
+        saveAs(new Blob([fd]), 'Archive.zip');
+        return;
         getLS();
         const resp = await fetch("/file/download", {
             method: "POST",
@@ -83,7 +85,6 @@ const List = props => {
             body: JSON.stringify({ url: props.half })
         });
         setDownloaded(true);
-        await save(fd, "Archive.zip");
     };
 
     if (downloaded) return <Downloaded />;
