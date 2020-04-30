@@ -33,27 +33,16 @@ const List = props => {
     };
 
     const getDecryptURL = async () => {
-        const fd = new FormData();
-        fd.append("url", url);
-        fd.append("hash", hash);
-        axios
-            .post("/file/decryptFile", fd, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-                onUploadProgress: progressEvent => {
-                    let prog = parseInt(
-                        Math.round(progressEvent.loaded * 100) /
-                            progressEvent.total
-                    );
-                    setDownloadPercentage(prog);
-                }
-            })
-            .then(data => {
-                setFd(data.data.data);
-                isld(false);
-            })
-            .catch(err => console.log(err));
+        const resp = await fetch("/file/decryptFile", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: url, hash: hash })
+        });
+        const dt = await resp.json();
+        setFd(dt.data.data);
+        isld(false);
     };
 
     React.useEffect(() => {
@@ -74,14 +63,7 @@ const List = props => {
     };
 
     if (downloaded) return <Downloaded />;
-    if (ld)
-        return (
-            <Spinner
-                id="downloaded"
-                intent="primary"
-                value={downloadPercentage}
-            />
-        );
+    if (ld) return <div id="spin"></div>
     else {
         return (
             <>
