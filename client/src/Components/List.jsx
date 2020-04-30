@@ -39,9 +39,33 @@ const List = props => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ url: url, hash: hash })
+        }).then(resp => {
+            const reader = resp.body.getReader();
+
+            const stream = new ReadableStream({
+                start(controller) {
+                    // The following function handles each data chunk
+                    function push() {
+                        // "done" is a Boolean and value a "Uint8Array"
+                        return reader.read().then(({ done, value }) => {
+                            // Is there no more data to read?
+                            if (done) {
+                                // Tell the browser that we have finished sending data
+                                controller.close();
+                                return;
+                            }
+
+                            // Get the data and send it to the browser via the controller
+                            controller.enqueue(value);
+                            setFd(value);
+                            push();
+                        });
+                    }
+
+                    push();
+                }
+            });
         });
-        const dt = await resp.json();
-        setFd(dt.data);
         isld(false);
     };
 
@@ -63,7 +87,7 @@ const List = props => {
     };
 
     if (downloaded) return <Downloaded />;
-    if (ld) return <div id="spin"></div>
+    if (ld) return <div id="spin"></div>;
     else {
         return (
             <>

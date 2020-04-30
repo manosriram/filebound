@@ -25,6 +25,7 @@
     "concurrently": "^5.2.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
+    "detect-character-encoding": "^0.8.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.7-alpha.3",
