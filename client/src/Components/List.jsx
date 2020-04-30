@@ -40,6 +40,7 @@ const List = props => {
             },
             body: JSON.stringify({ url: url, hash: hash })
         }).then(resp => {
+            console.log(resp);
             const reader = resp.body.getReader();
 
             const stream = new ReadableStream({

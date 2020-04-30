@@ -173,6 +173,7 @@ router.post("/decryptFile", async (req, res) => {
             total += data.length;
         })
         .on("end", async end => {
+            res.setHeader("Content-type", "application/octet-stream");
             const sendBuffer = Buffer.concat(bufferArray, total);
             const decryptedData = await decryptBuffer(sendBuffer, hash);
             res.write(decryptedData);
