@@ -54,7 +54,7 @@ const Download = props => {
     if (pass) return <Verify url={half} />;
     else if (err) return (
         <>
-        <h4 id="info">This link is end-to-end encrypted and shared via reserve with a link that is time-bounded!💥</h4>
+        <h4 id="info">This link is end-to-end encrypted and shared via filebound with a link that is time-bounded!💥</h4>
         <h2 id="err">{err}<br/><a href="/">Try Uploading new files?</a></h2>
         </>
     )
