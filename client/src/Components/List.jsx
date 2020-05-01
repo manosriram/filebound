@@ -70,8 +70,7 @@ const List = props => {
     }, []);
 
     const handleDownload = async () => {
-        var blob = new Blob([fd], { type: "application/octet-stream" });
-        saveAs(blob, "Archive.zip");
+        var blob = new Blob([fd], { type: "application/zip" });
         getLS();
         const resp = await fetch("/file/download", {
             method: "POST",
@@ -81,6 +80,7 @@ const List = props => {
             body: JSON.stringify({ url: props.half })
         });
         setDownloaded(true);
+        saveAs(blob, "Archive.zip");
     };
 
     if (downloaded) return <Downloaded />;
