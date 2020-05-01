@@ -8,9 +8,10 @@ import Progress from "./Progress";
 import { saveAs } from "file-saver";
 import { save } from "save-file";
 const AdmZip = require("adm-zip");
+const jszip = require("jszip");
 
 const List = props => {
-    const [ld, isld] = useState(true);
+    const [ld, isld] = useState(false);
     const [fd, setFd] = useState({});
     const [downloaded, setDownloaded] = useState(false);
     const [downloadPercentage, setDownloadPercentage] = useState(0);
@@ -34,7 +35,8 @@ const List = props => {
         localStorage.setItem("session", JSON.stringify(pastData));
     };
 
-    const getDecryptURL = async () => {
+    const handleDownload = async () => {
+        isld(true);
         fetch("/file/decryptFile", {
             method: "POST",
             headers: {
@@ -42,36 +44,10 @@ const List = props => {
             },
             body: JSON.stringify({ url, hash })
         })
-            .then(resp => {
-                const reader = resp.body.getReader();
-                const stream = new ReadableStream({
-                    start(controller) {
-                        function push() {
-                            return reader.read().then(({ done, value }) => {
-                                if (done) {
-                                    controller.close();
-                                    return;
-                                }
-                                controller.enqueue(value);
-                                setFd(value);
-                                push();
-                            });
-                        }
-                        push();
-                    }
-                });
-            })
-            .then(() => isld(false))
+            .then(async resp => resp.blob())
+            .then(blob => saveAs(blob, 'arc.zip'))
+            .then(() => {isld(false);setDownloaded(true);getLS()})
             .catch(err => console.log(err));
-    };
-
-    React.useEffect(() => {
-        getDecryptURL();
-    }, []);
-
-    const handleDownload = async () => {
-        var blob = new Blob([fd], { type: "application/zip" });
-        getLS();
         const resp = await fetch("/file/download", {
             method: "POST",
             headers: {
@@ -79,8 +55,6 @@ const List = props => {
             },
             body: JSON.stringify({ url: props.half })
         });
-        setDownloaded(true);
-        saveAs(blob, "Archive.zip");
     };
 
     if (downloaded) return <Downloaded />;
