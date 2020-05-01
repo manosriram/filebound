@@ -120,4 +120,7 @@
     #tech-info {
         display: none;
     }
+    #password {
+        margin-top: 25vh;
+    }
 }

@@ -11,7 +11,7 @@ const AdmZip = require("adm-zip");
 const jszip = require("jszip");
 
 const List = props => {
-    const [ld, isld] = useState(false);
+    const [ld, isld] = useState(true);
     const [fd, setFd] = useState({});
     const [downloaded, setDownloaded] = useState(false);
     const [downloadPercentage, setDownloadPercentage] = useState(0);
@@ -35,8 +35,7 @@ const List = props => {
         localStorage.setItem("session", JSON.stringify(pastData));
     };
 
-    const handleDownload = async () => {
-        isld(true);
+    const downloadZip = () => {
         fetch("/file/decryptFile", {
             method: "POST",
             headers: {
@@ -44,10 +43,18 @@ const List = props => {
             },
             body: JSON.stringify({ url, hash })
         })
-            .then(async resp => resp.blob())
-            .then(blob => saveAs(blob, 'arc.zip'))
-            .then(() => {isld(false);setDownloaded(true);getLS()})
+            .then(resp => resp.blob())
+            .then(blob => setFd(blob))
+            .then(() => isld(false))
             .catch(err => console.log(err));
+    };
+
+    React.useEffect(() => {
+        downloadZip();
+    }, []);
+
+    const handleDownload = async () => {
+        isld(true);
         const resp = await fetch("/file/download", {
             method: "POST",
             headers: {
@@ -55,6 +62,9 @@ const List = props => {
             },
             body: JSON.stringify({ url: props.half })
         });
+        setDownloaded(true);
+        getLS();
+        saveAs(fd, 'Archive.zip');
     };
 
     if (downloaded) return <Downloaded />;

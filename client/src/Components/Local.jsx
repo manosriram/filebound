@@ -68,7 +68,7 @@ const Local = props => {
                 <div id="tech-info">
                     <div id="title">
                         <h1>
-                            <strong>File Sharing made private.</strong>
+                            <strong>File Sharing made private(beta)</strong>
                         </h1>
                     </div>
                     <div id="det">
@@ -125,7 +125,7 @@ const Local = props => {
                                             </strong>
                                             {"  "} or after{" "}
                                             <strong>
-                                                {lst.downloads} download{" "}
+                                                {lst.downloads} download
                                                 {lst.downloads > 1 ? "s" : ""}
                                             </strong>
                                         </p>

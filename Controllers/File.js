@@ -7,7 +7,6 @@ const fs = require("fs");
 const crypto = require("crypto");
 const { ALGORITHM } = process.env;
 const AdmZip = require("adm-zip");
-const dd = require("detect-character-encoding");
 
 const {
     encryptFileName,
@@ -47,7 +46,6 @@ router.post("/upload", async (req, res) => {
     }
     try {
         var zippedFile = zipFile(req.files.files).toBuffer();
-        console.log(zippedFile);
         var hashKey = crypto.randomBytes(32).toString("hex");
 
         var encryptedBuffer = encryptBuffer(zippedFile, hashKey);
@@ -160,10 +158,15 @@ router.post("/decryptFile", async (req, res) => {
         Bucket: process.env.BUCKET,
         Key: url
     };
-    const encrypted = await getObject(url);
-    const decrypted = await decryptBuffer(encrypted, hash);
-    res.write(decrypted);
-    res.end();
+    try {
+        const encrypted = await getObject(url);
+        const decrypted = await decryptBuffer(encrypted, hash);
+
+        res.write(decrypted);
+        res.end();
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 module.exports = router;

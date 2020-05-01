@@ -24,7 +24,7 @@ const Verify = props => {
         });
         const data = await resp.json();
         setValid(data.valid);
-        if (!data.valid) setMSG("Wrong Pass!");
+        if (!data.valid) setMSG("Password Incorrect");
     };
 
     if (valid) return <Download valid={true} url={props.url} />;
@@ -44,6 +44,7 @@ const Verify = props => {
                     </div>
                 )}
             </div>
+            <h4 id="password">This URL is password protected!</h4>
             <div id="passgroup">
                 <InputGroup
                     autofocus="on"

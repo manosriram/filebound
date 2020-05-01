@@ -22,7 +22,7 @@ body, html {
  
 #err,
 #info,
-#downloaded, #privacy {
+#downloaded, #privacy, #password {
     color: black;
     text-align: center;
     margin: auto;
@@ -35,13 +35,14 @@ body, html {
     bottom: 0;
     margin: auto;
     max-width: 100%;
+
     max-height: 100%;
     overflow: hidden;
     border-radius: 10px;
     position: relative;
 }
 
-#downloaded, #privacy {
+#downloaded, #privacy, #prg {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -52,6 +53,11 @@ body, html {
 #info {
     margin-top: 20em;
     font-size: 16px;
+}
+
+#password {
+    margin-top: 35vh;
+    font-size: 22px;
 }
 
 #spin,
