@@ -30,7 +30,6 @@ const Local = props => {
         function() {
             try {
                 const nowData = JSON.parse(localStorage.getItem("session"));
-                console.log(nowData);
                 if (nowData.length != 0) setEmpty(false);
                 else setEmpty(true);
             } catch (err) {

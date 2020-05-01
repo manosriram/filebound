@@ -47,10 +47,10 @@ router.post("/upload", async (req, res) => {
     }
     try {
         var zippedFile = zipFile(req.files.files).toBuffer();
+        console.log(zippedFile);
         var hashKey = crypto.randomBytes(32).toString("hex");
 
         var encryptedBuffer = encryptBuffer(zippedFile, hashKey);
-        console.log(encryptedBuffer);
         var genn = nanoid(32);
 
         if (password) {
@@ -156,29 +156,14 @@ router.post("/download", async (req, res) => {
 router.post("/decryptFile", async (req, res) => {
     let { url, hash } = req.body;
     url += ".zip";
-    var zipp = new AdmZip();
     const params = {
         Bucket: process.env.BUCKET,
         Key: url
     };
-    var bufferArray = [],
-        total = 0;
-    s3.getObject(params)
-        .createReadStream()
-        .on("error", err => {
-            console.log(err);
-        })
-        .on("data", data => {
-            bufferArray.push(data);
-            total += data.length;
-        })
-        .on("end", async end => {
-            res.setHeader("Content-type", "application/octet-stream");
-            const sendBuffer = Buffer.concat(bufferArray, total);
-            const decryptedData = await decryptBuffer(sendBuffer, hash);
-            res.write(decryptedData);
-            res.end();
-        });
+    const encrypted = await getObject(url);
+    const decrypted = await decryptBuffer(encrypted, hash);
+    res.write(decrypted);
+    res.end();
 });
 
 module.exports = router;

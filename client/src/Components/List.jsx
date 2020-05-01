@@ -5,7 +5,9 @@ import "./App.css";
 import { Spinner, Icon } from "@blueprintjs/core";
 import Downloaded from "./Downloaded";
 import Progress from "./Progress";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
+import { save } from "save-file";
+const AdmZip = require("adm-zip");
 
 const List = props => {
     const [ld, isld] = useState(true);
@@ -33,39 +35,34 @@ const List = props => {
     };
 
     const getDecryptURL = async () => {
-        const resp = await fetch("/file/decryptFile", {
+        fetch("/file/decryptFile", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-type": "application/json"
             },
-            body: JSON.stringify({ url: url, hash: hash })
-        }).then(resp => {
-            const reader = resp.body.getReader();
-            const stream = new ReadableStream({
-                start(controller) {
-                    // The following function handles each data chunk
-                    function push() {
-                        // "done" is a Boolean and value a "Uint8Array"
-                        return reader.read().then(({ done, value }) => {
-                            // Is there no more data to read?
-                            if (done) {
-                                // Tell the browser that we have finished sending data
-                                controller.close();
-                                return;
-                            }
-
-                            // Get the data and send it to the browser via the controller
-                            controller.enqueue(value);
-                            setFd(value);
-                            push();
-                        });
+            body: JSON.stringify({ url, hash })
+        })
+            .then(resp => {
+                const reader = resp.body.getReader();
+                const stream = new ReadableStream({
+                    start(controller) {
+                        function push() {
+                            return reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                }
+                                controller.enqueue(value);
+                                setFd(value);
+                                push();
+                            });
+                        }
+                        push();
                     }
-
-                    push();
-                }
-            });
-        });
-        isld(false);
+                });
+            })
+            .then(() => isld(false))
+            .catch(err => console.log(err));
     };
 
     React.useEffect(() => {
@@ -73,8 +70,8 @@ const List = props => {
     }, []);
 
     const handleDownload = async () => {
-        saveAs(new Blob([fd], { type: 'application/octet-stream' }), 'Archive.zip');
-        return;
+        var blob = new Blob([fd], { type: "application/octet-stream" });
+        saveAs(blob, "Archive.zip");
         getLS();
         const resp = await fetch("/file/download", {
             method: "POST",
