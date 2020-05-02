@@ -1,5 +1,5 @@
 {
-  "name": "reserve",
+  "name": "filebound",
   "version": "1.0.0",
   "description": "Web App to store and retrieve files using a time-bounded, shortened URL ⏳",
   "main": "server.js",
