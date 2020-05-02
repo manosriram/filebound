@@ -28,5 +28,8 @@ When downloading, your encrypted zip-file is downloaded and decrypted with the h
 - aws-sdk
 
 ### Installation
+```js
 npm install
-npm run dev (Opens browser tab at port 3000)
+nodemon server.js
+cd client && npm start
+```
