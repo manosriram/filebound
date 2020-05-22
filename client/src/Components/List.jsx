@@ -64,7 +64,7 @@ const List = props => {
         });
         setDownloaded(true);
         getLS();
-        saveAs(fd, 'Archive.zip');
+        saveAs(fd, "Archive.zip");
     };
 
     if (downloaded) return <Downloaded />;

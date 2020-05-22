@@ -55,10 +55,14 @@ const Local = props => {
 
     React.useEffect(() => {
         setTimeout(() => {
-            if (JSON.parse(localStorage.getItem("session")).length == 0)
-                setEmpty(true);
-            else setEmpty(false);
-            setTime([]);
+            try {
+                if (JSON.parse(localStorage.getItem("session")).length == 0)
+                    setEmpty(true);
+                else setEmpty(false);
+                setTime([]);
+            } catch (err) {
+                console.log(err);
+            }
         }, 1000);
     });
 

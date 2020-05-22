@@ -24,7 +24,7 @@ const zipFile = files => {
         for (let t = 0; t < files.length; ++t) {
             zipp.addFile(
                 files[t].name,
-                Buffer.alloc(files[t].size, files[t].data)
+                Buffer.alloc(files[t].size, files[t].data) // Put file in.
             );
         }
     } else {
