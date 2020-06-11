@@ -62,9 +62,9 @@ const List = props => {
             },
             body: JSON.stringify({ url: props.half })
         });
-        setDownloaded(true);
         getLS();
         saveAs(fd, "Archive.zip");
+        setDownloaded(true);
     };
 
     if (downloaded) return <Downloaded />;
