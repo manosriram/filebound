@@ -2,6 +2,5 @@ a.out
 .DS_Store
 node_modules
 package-lock.json
-.env
 dec.js
 enc.js
