@@ -31,5 +31,7 @@ When downloading, your encrypted zip-file is downloaded and decrypted with the h
 ```js
 npm install
 nodemon server.js
-cd client && npm start
+
+cd client
+npm install && npm start
 ```
